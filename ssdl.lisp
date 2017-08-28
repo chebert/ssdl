@@ -20,8 +20,9 @@
   (width :int)
   (height :int))
 
-(cffi:defcfun ("flip" flip) :void
-  "Flip the back (graphics) buffer and the front buffer.")
+(cffi:defcfun ("flip" display) :void
+  "Display the changes drawn to the screen.
+Call after calling draw functions to see changes.")
 (cffi:defcfun ("clear" clear) :void
   "Clear the screen to the draw-color.")
 (cffi:defcfun ("draw_rect" draw-rect) :void
