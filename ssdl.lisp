@@ -109,14 +109,31 @@ The event remains the same until POLL-EVENT is called again.")
 (cffi:defcfun ("is_quit" quit?) :bool
   "True if quit event.")
 
+
+(cffi:defcfun ("SDL_LockAudio" audio-lock) :void)
+(cffi:defcfun ("SDL_UnlockAudio" audio-unlock) :void)
+
+(defmacro with-audio-lock (&body body)
+  "Must surround calls that pertain to the audio buffer during audio playback,
+e.g. WRITE-AUDIO, AUDIO-AVAILABLE, and CLEAR-AUDIO.
+Locks the audio device from modifying the audio buffer on the audio
+thread."
+  `(progn
+     (audio-lock)
+     ,@body
+     (audio-unlock)))
+
 (cffi:defcfun ("audio_available" audio-available) :int
-  "Return the amount of audio bytes that can be written to the audio buffer.")
+  "MUST BE CALLED in WITH-AUDIO-LOCK.
+Return the amount of audio bytes that can be written to the audio buffer.")
 (cffi:defcfun ("write_audio" write-audio%) :void
   (source (:pointer :uint8))
   (n :int))
 
 (defun write-audio (bytes)
-  "Write the vector of unsigned bytes to the audio buffer."
+  "MUST BE CALLED in WITH-AUDIO-LOCK.
+Write the (simple-array (unsigned-byte 8)) bytes to the audio buffer.
+Audio will play silence if no audio is present in the buffer."
   (declare (type (simple-array (unsigned-byte 8)) bytes))
   (let ((len (length bytes)))
     (cffi:with-foreign-object (carr :uint8 len)
@@ -125,7 +142,8 @@ The event remains the same until POLL-EVENT is called again.")
       (write-audio% carr len))))
 
 (cffi:defcfun ("clear_audio" clear-audio) :void
-  "Clear the audio buffer.")
+  "MUST BE CALLED in WITH-AUDIO-LOCK.
+Clear the audio buffer.")
 (cffi:defcfun ("stop_audio" stop-audio) :void
   "Pause audio playback.")
 (cffi:defcfun ("play_audio" play-audio) :void
