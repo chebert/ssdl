@@ -106,6 +106,25 @@ The event remains the same until POLL-EVENT is called again.")
 (cffi:defcfun ("mouse_y" mouse-y) :int
   "Return the y position of the mouse for mouse move or mouse button events.")
 
+(cffi:defcfun ("is_joy_added" joy-added?) :bool
+  "True if event indicates a joystick was connected.")
+(cffi:defcfun ("is_joy_removed" joy-removed?) :bool
+  "True if event indicates a joystick was removed")
+(cffi:defcfun ("is_joy_down" joy-down?) :bool
+  "True if event is joy button press")
+(cffi:defcfun ("is_joy_up" joy-up?) :bool
+  "True if event is joy button release")
+(cffi:defcfun ("is_joy_axis" joy-axis?) :bool
+  "True if event is joy axis motion")
+(cffi:defcfun ("joy_id" joy-id) :int
+  "Return index of joystick associated with joystick event")
+(cffi:defcfun ("joy_button" joy-button) :int
+  "Return index of button associated with joystick event")
+(cffi:defcfun ("joy_axis" joy-axis) :int
+  "Return index of axis associated with joystick event")
+(cffi:defcfun ("joy_axis_value" joy-axis-value) :int
+  "Return value of axis for a joystick axis event")
+
 (cffi:defcfun ("is_quit" quit?) :bool
   "True if quit event.")
 
@@ -151,23 +170,32 @@ Clear the audio buffer.")
 
 ;; Audio Formats
 (defparameter *audio-u8* #x0008
-  "Audio format used in OPEN-AUDIO")
+  "Audio format used in OPEN-AUDIO.
+Range: 0 to 255, centerpoint: 128")
 (defparameter *audio-s8* #x8008
-  "Audio format used in OPEN-AUDIO")
+  "Audio format used in OPEN-AUDIO
+Range: -128 to 127")
 (defparameter *audio-u16* #x0010
-  "Audio format used in OPEN-AUDIO")
+  "Audio format used in OPEN-AUDIO.
+Range: 0 to 65535, centerpoint: 32768
+Little-endian.")
 (defparameter *audio-s16* #x8010
-  "Audio format used in OPEN-AUDIO")
+  "Audio format used in OPEN-AUDIO.
+Range: -32768 to 32767
+Little-endian.")
 (defparameter *audio-s32* #x8020
-  "Audio format used in OPEN-AUDIO")
+  "Audio format used in OPEN-AUDIO.
+Range: -#x8000000 to #x0FFFFFFF
+Little-endian.")
 (defparameter *audio-f32* #x8120
-  "Audio format used in OPEN-AUDIO")
+  "Audio format used in OPEN-AUDIO.
+Little-endian.")
 
 (cffi:defcfun ("open_audio" open-audio) :bool
   "Open an audio device.
 AUDIO-FORMAT is one of *AUDIO-U8*, *AUDIO-S8*, etc.
 SAMPLES-PER-SECOND e.g. 44100 for high quality.
-NUM-CHANNELS is 1 for mono, 2 for stereo.
+NUM-CHANNELS is 1 for mono, 2 for stereo. Samples for channels are interleaved.
 AUDIO-BUFFER-SIZE-IN-SAMPLES specifies the size in samples of the audio buffer used
 directly by the device. 2048, 4096, etc.
 BUFFER-SIZE-IN-BYTES specifies the size in bytes of the buffer used by WRITE-AUDIO."
@@ -178,47 +206,31 @@ BUFFER-SIZE-IN-BYTES specifies the size in bytes of the buffer used by WRITE-AUD
   (buffer-size-in-bytes :int))
 
 (defun sample-size-in-bytes (audio-format num-channels)
-  "Return the size in bytes of a sample."
-  (* (ecase audio-format
-       ((#.*audio-u8* #.*audio-s8*) 1)
-       ((#.*audio-u16* #.*audio-s16*) 2)
-       ((#.*audio-s32* #.*audio-f32*) 4))
+  "Return the size in bytes of a sample
+AUDIO-FORMAT is one of *AUDIO-U8*, *AUDIO-S8*, etc.
+NUM-CHANNELS is 1 for mono, 2 for stereo."
+  (* (floor (logand #xFF audio-format) 8)
      num-channels))
 
 (cffi:defcfun ("close_audio" close-audio) :void
-  "Close the audio device.")
+  "Close the audio device. QUIT will also close the audio device.")
 
 (cffi:defcfun ("ticks" ticks) :int
-  "Number of milliseconds since INIT")
+  "Number of milliseconds elapsed since INIT")
 (cffi:defcfun ("delay" delay) :void
-  "Delay (and yield) execution for MS amount of time."
+  "Delay (and yield to other threads) execution for MS amount of time.
+Use in infinite loops to ensure other threads have an opportunity to run.
+Delays for at least the specified time.
+NOTE: Count on a delay granularity of *at least* 10 ms."
   (ms :int))
 
 (cffi:defcfun ("scancode_name" scancode-name) :string
   "Return the name of the SCANCODE which can be used in SCANCODE-FROM-NAME."
   (scancode :uint32))
 (cffi:defcfun ("scancode_from_name" scancode-from-name) :uint32
-  "Return the scancode given the NAME. See SCANCODE-NAME."
+  "Return the scancode given the NAME. See SCANCODE-NAME.
+Consider obtaining scancodes needed all at once and storing in variables."
   (name :string))
-
-(cffi:defcfun ("is_joy_added" joy-added?) :bool
-  "True if event indicates a joystick was connected.")
-(cffi:defcfun ("is_joy_removed" joy-removed?) :bool
-  "True if event indicates a joystick was removed")
-(cffi:defcfun ("is_joy_down" joy-down?) :bool
-  "True if event is joy button press")
-(cffi:defcfun ("is_joy_up" joy-up?) :bool
-  "True if event is joy button release")
-(cffi:defcfun ("is_joy_axis" joy-axis?) :bool
-  "True if event is joy axis motion")
-(cffi:defcfun ("joy_id" joy-id) :int
-  "Return index of joystick associated with joystick event")
-(cffi:defcfun ("joy_button" joy-button) :int
-  "Return index of button associated with joystick event")
-(cffi:defcfun ("joy_axis" joy-axis) :int
-  "Return index of axis associated with joystick event")
-(cffi:defcfun ("joy_axis_value" joy-axis-value) :int
-  "Return value of axis for a joystick axis event")
 
 (defparameter *samples/second* 44100)
 (defparameter *num-channels* 2)
@@ -227,8 +239,7 @@ BUFFER-SIZE-IN-BYTES specifies the size in bytes of the buffer used by WRITE-AUD
 (let ((sn 0))
   (defun sine-audio (num-samples)
     (let* ((num-bytes (* num-samples
-			 (sample-size-in-bytes *audio-format* *num-channels*)
-			 *num-channels* 2))
+			 (sample-size-in-bytes *audio-format* *num-channels*)))
 	   (v (make-array num-bytes :element-type '(unsigned-byte 8)))
 	   (n 0))
       (loop while (< n num-bytes)
@@ -249,20 +260,27 @@ BUFFER-SIZE-IN-BYTES specifies the size in bytes of the buffer used by WRITE-AUD
 (defun test ()
   (init "hello" 640 480)
   (clear)
-  (flip)
+  (display)
 
-  (open-audio *audio-format*
-	      *samples/second*
-	      *num-channels*
-	      *audio-buffer-size-in-samples*
-	      (* 2048 2 2))
+  (unless (open-audio *audio-format*
+		      *samples/second*
+		      *num-channels*
+		      *audio-buffer-size-in-samples*
+		      (* *audio-buffer-size-in-samples*
+			 (sample-size-in-bytes *audio-format* *num-channels*)))
+    (format t "~&Failed to open audio."))
 
   (play-audio)
+  
+
   (let ((start-ticks (ticks)))
     (loop while (< (- (ticks) start-ticks) 1000)
        do
-	 (write-audio (sine-audio (floor (audio-available)
-					 (* 2 *num-channels*))))
+	 (with-audio-lock
+	   (write-audio (sine-audio (floor (audio-available)
+					   (sample-size-in-bytes
+					    *audio-format*
+					    *num-channels*)))))
 	 (delay 1)))
   (stop-audio)
 
@@ -271,8 +289,8 @@ BUFFER-SIZE-IN-BYTES specifies the size in bytes of the buffer used by WRITE-AUD
     (draw-texture tex 32 32 32 32 10 100 32 32 0.0d0 0 0 (flip-none))
     (draw-color 255 0 0 255)
     (draw-rect 100 10 200 300 t))
-  (flip)
-
+  (display)
+  
   (let ((quit? nil))
     (loop until quit? do
 	 (loop while (poll-event)
@@ -293,7 +311,6 @@ BUFFER-SIZE-IN-BYTES specifies the size in bytes of the buffer used by WRITE-AUD
 	      (when (joy-added?)
 		(format t "~&joystick ~D plugged in" (joy-id))))
 	 (delay 1)))
-  
   (quit))
 
 ;;(test)
