@@ -18,5 +18,6 @@ See the README.txt for example programs."
   :depends-on (#:cffi)
   :serial t
   :components ((:file "package")
-               (:file "ssdl")))
+               (:file "ssdl")
+	       (:file "examples")))
 

@@ -5,23 +5,32 @@
 (defpackage #:ssdl
   (:use #:cl)
   (:export
-   #:quit
+   #:with-init
    #:init
+   #:quit
+
    #:display
+
    #:clear
    #:draw-rect
+   #:draw-color
+
    #:load-bmp
    #:flip-none
    #:flip-horizontal
    #:flip-vertical
    #:draw-texture
    #:free-texture
-   #:draw-color
+
    #:poll-event
+
    #:key-down?
    #:key-up?
    #:repeat?
    #:scancode
+   #:scancode-name
+   #:scancode-from-name
+
    #:mouse-motion?
    #:mouse-button-down?
    #:mouse-button-up?
@@ -30,25 +39,7 @@
    #:rmb?
    #:mouse-x
    #:mouse-y
-   #:quit?
-   #:audio-available
-   #:write-audio
-   #:clear-audio
-   #:stop-audio
-   #:play-audio
-   #:*audio-u8*
-   #:*audio-s8*
-   #:*audio-u16*
-   #:*audio-s16*
-   #:*audio-s32*
-   #:*audio-f32*
-   #:open-audio
-   #:sample-size-in-bytes
-   #:close-audio
-   #:ticks
-   #:delay
-   #:scancode-name
-   #:scancode-from-name
+
    #:joy-added?
    #:joy-removed?
    #:joy-down?
@@ -58,10 +49,52 @@
    #:joy-button
    #:joy-axis
    #:joy-axis-value
+
+   #:quit?
+
+   #:open-joystick
+   #:close-joystick
+   #:joystick-id
+
+   #:with-audio-lock
+   #:audio-lock
+   #:audio-unlock
+   #:format-byte-size
+   #:open-audio
+   #:close-audio
+   #:audio-available
+   #:write-audio
+   #:clear-audio
+   #:play-audio
+   #:stop-audio
+   #:sample-size-in-bytes
    #:audio-u8
    #:audio-s8
    #:audio-u16
    #:audio-s16
    #:audio-s32
-   #:audio-f32))
+   #:audio-f32
 
+   #:ticks
+   #:delay))
+
+(defpackage #:ssdl-examples
+  (:use #:cl #:ssdl)
+  (:export
+   #:test-audio
+   #:test-mouse
+   #:test-keyboard
+   #:test-joysticks
+   #:test-texture
+   #:test-texture-mod
+   #:test-rect
+
+   #:*samples/second*
+   #:*num-channels*
+   #:*audio-device-buffer-size-in-samples*
+   #:*audio-format*
+   #:signed-int16
+   #:byte1
+   #:byte2
+   #:*num-samples-written*
+   #:sine-audio))
