@@ -2,6 +2,7 @@
 
 #include <SDL2/SDL.h>
 #include <assert.h>
+#include <math.h>
 
 static SDL_Window* window;
 static SDL_Renderer* renderer;
@@ -164,7 +165,7 @@ static struct {
 	// Ring Buffer for queuing audio to be written by SDL's audio callback
 	unsigned char *buffer;
 	int start, end, size, capacity;
-} audio;
+} audio = { 0 };
 
 int audio_available() {
 	// Number of bytes that can be written to the ring buffer
@@ -245,6 +246,7 @@ void clear_audio() {
 
 static void init_audio(int bytes) {
 	// Create a new audio buffer of length bytes
+	if (audio.buffer) free(audio.buffer);
 	audio.buffer = (unsigned char*)malloc(bytes);
 	audio.capacity = bytes;
 	clear_audio();
@@ -393,8 +395,16 @@ SDL_Scancode scancode_from_name(const char* str) { return SDL_GetScancodeFromNam
 SDL_Joystick* open_joystick(int device_index) {
 	return SDL_JoystickOpen(device_index);
 }
+int joystick_id(SDL_Joystick* js) {
+	return SDL_JoystickInstanceID(js);
+}
 void close_joystick(SDL_Joystick *js) {
 	SDL_JoystickClose(js);
+}
+
+void texture_color_mod(SDL_Texture* tex, Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
+	SDL_SetTextureColorMod(tex, r, g, b);
+	SDL_SetTextureAlphaMod(tex, a);
 }
 
 static int test_main() {
@@ -406,7 +416,7 @@ static int test_main() {
 	if (open_audio(AUDIO_S16, 44100, 2, 2048, 2048*2*2)) {
 		play_audio();
 		int start_ticks = ticks();
-		while (ticks() - start_ticks < 3000) {
+		while (ticks() - start_ticks < 300) {
 			write_sine();
 			delay(15);
 		}
@@ -427,6 +437,9 @@ static int test_main() {
 		while (poll_event()) {
 			if (is_key_down()) {
 				printf("%s pressed\n", scancode_name(scancode()));
+			}
+			if (is_joy_down()) {
+				printf("joy button pressed\n");
 			}
 			if (is_key_down() && scancode() == scancode_from_name("escape")) {
 				q = 1;
