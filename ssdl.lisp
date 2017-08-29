@@ -10,7 +10,7 @@
 (cffi:use-foreign-library :ssdl)
 
 (cffi:defcfun ("quit" quit) :void
-  "Quit SDL.")
+  "Quit SDL. Close the audio-stream.")
 
 (cffi:defcfun ("init" init) :bool
   "Initialize SDL and create a window with the given title and dimensions."
@@ -202,25 +202,25 @@ Clear the audio buffer.")
   "Returns the size in bytes of a (1-channel) sample of format AUDIO-FORMAT."
   (audio-format :uint16))
 (cffi:defcfun ("audio_u8" audio-u8) :uint16
-  "Audio format used in OPEN-AUDIO.
+  "Audio format used in OPEN-AUDIO. 8-bit unsigned int.
 Range: 0 to 255, centerpoint: 128")
 (cffi:defcfun ("audio_s8" audio-s8) :uint16
-  "Audio format used in OPEN-AUDIO
+  "Audio format used in OPEN-AUDIO. 8-bit signed int.
 Range: -128 to 127")
 (cffi:defcfun ("audio_u16" audio-u16) :uint16
-  "Audio format used in OPEN-AUDIO.
+  "Audio format used in OPEN-AUDIO. 16-bit unsigned int.
 Range: 0 to 65535, centerpoint: 32768
 Little-endian.")
 (cffi:defcfun ("audio_s16" audio-s16) :uint16
-  "Audio format used in OPEN-AUDIO.
+  "Audio format used in OPEN-AUDIO. 16-bit signed int.
 Range: -32768 to 32767
 Little-endian.")
 (cffi:defcfun ("audio_s32" audio-s32) :uint16
-  "Audio format used in OPEN-AUDIO.
+  "Audio format used in OPEN-AUDIO. 32-bit unsigned int.
 Range: -#x8000000 to #x7FFFFFFF
 Little-endian.")
 (cffi:defcfun ("audio_f32" audio-f32) :uint16
-  "Audio format used in OPEN-AUDIO.
+  "Audio format used in OPEN-AUDIO. 32-bit floating point.
 Little-endian.")
 
 (cffi:defcfun ("open_audio" open-audio) :bool

@@ -15,6 +15,8 @@ SSDL is extremely tiny and only has two dynamic library files: SSDL and version
 2.0.4 of SDL.
 
 Features:
+* documentation!
+* examples!
 * exactly one window
 * one audio device
 * writing bytes (almost) directly to the audio buffer
