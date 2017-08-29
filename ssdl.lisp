@@ -199,9 +199,6 @@ Clear the audio buffer.")
   "Play/Resume audio playback.")
 
 ;; Audio Formats
-(cffi:defcfun ("format_byte_size" format-byte-size) :int
-  "Returns the size in bytes of a (1-channel) sample of format AUDIO-FORMAT."
-  (audio-format :uint16))
 (cffi:defcfun ("audio_u8" audio-u8) :uint16
   "Audio format used in OPEN-AUDIO. 8-bit unsigned int.
 Range: 0 to 255, centerpoint: 128")
@@ -236,23 +233,11 @@ AUDIO-DEVICE-BUFFER-SIZE-IN-SAMPLES specifies the size in samples of the
 audio buffer used directly by the device. 2048, 4096, etc. For games you might
 calculate this based on the number of video frames of sound. E.g. write audio
 for 4 frames of video at 60Hz would be the closest power of 2 to
- 4*SAMPLES-PER-SECOND/FPS.
-
-BUFFER-SIZE-IN-BYTES specifies the size in bytes of the buffer used by 
-WRITE-AUDIO. Typically this is the same as the 
-AUDIO-DEVICE-BUFFER-SIZE-IN-SAMPLES, but in bytes. See SAMPLE-SIZE-IN-BYTES."
+ 4*SAMPLES-PER-SECOND/FPS."
   (audio-format :uint16)
   (samples-per-second :int)
   (num-channels :int)
-  (audio-device-buffer-size-in-samples :int)
-  (buffer-size-in-bytes :int))
-
-(defun sample-size-in-bytes (audio-format num-channels)
-  "Return the size in bytes of a sample
-AUDIO-FORMAT is one of AUDIO-U8, AUDIO-S8, etc.
-NUM-CHANNELS is 1 for mono, 2 for stereo."
-  (* (format-byte-size audio-format)
-     num-channels))
+  (audio-device-buffer-size-in-samples :int))
 
 (cffi:defcfun ("ticks" ticks) :int
   "Number of milliseconds elapsed since INIT")

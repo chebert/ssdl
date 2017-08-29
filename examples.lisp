@@ -84,12 +84,7 @@ for 3 seconds, then the program ends."
     (unless (open-audio *audio-format*
 			*samples/second*
 			*num-channels*
-			*audio-device-buffer-size-in-samples*
-			;; Make the audio buffer the same size as the
-			;; device audio buffer.
-			(* *audio-device-buffer-size-in-samples*
-			   (sample-size-in-bytes *audio-format*
-						 *num-channels*)))
+			*audio-device-buffer-size-in-samples*)
       (error "~&Failed to open audio. See stderr for details."))
 
 
