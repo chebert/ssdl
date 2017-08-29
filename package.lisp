@@ -57,5 +57,11 @@
    #:joy-id
    #:joy-button
    #:joy-axis
-   #:joy-axis-value))
+   #:joy-axis-value
+   #:audio-u8
+   #:audio-s8
+   #:audio-u16
+   #:audio-s16
+   #:audio-s32
+   #:audio-f32))
 

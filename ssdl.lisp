@@ -4,8 +4,6 @@
 
 (in-package #:ssdl)
 
-;;; "ssdl" goes here. Hacks and glory await!
-
 (cffi:define-foreign-library :ssdl
   (t #.(asdf:system-relative-pathname :ssdl "libssdl.so")))
 
@@ -28,7 +26,7 @@ Calls QUIT to cleanup."
 	       ,@body)
      (quit)))
 
-(cffi:defcfun ("flip" display) :void
+(cffi:defcfun ("display" display) :void
   "Display the changes drawn to the screen.
 Call after calling draw functions to see changes.")
 (cffi:defcfun ("clear" clear) :void
@@ -200,31 +198,34 @@ Clear the audio buffer.")
   "Play/Resume audio playback.")
 
 ;; Audio Formats
-(defparameter *audio-u8* #x0008
+(cffi:defcfun ("format_byte_size" format-byte-size) :int
+  "Returns the size in bytes of a (1-channel) sample of format AUDIO-FORMAT."
+  (audio-format :uint16))
+(cffi:defcfun ("audio_u8" audio-u8) :uint16
   "Audio format used in OPEN-AUDIO.
 Range: 0 to 255, centerpoint: 128")
-(defparameter *audio-s8* #x8008
+(cffi:defcfun ("audio_s8" audio-s8) :uint16
   "Audio format used in OPEN-AUDIO
 Range: -128 to 127")
-(defparameter *audio-u16* #x0010
+(cffi:defcfun ("audio_u16" audio-u16) :uint16
   "Audio format used in OPEN-AUDIO.
 Range: 0 to 65535, centerpoint: 32768
 Little-endian.")
-(defparameter *audio-s16* #x8010
+(cffi:defcfun ("audio_s16" audio-s16) :uint16
   "Audio format used in OPEN-AUDIO.
 Range: -32768 to 32767
 Little-endian.")
-(defparameter *audio-s32* #x8020
+(cffi:defcfun ("audio_s32" audio-s32) :uint16
   "Audio format used in OPEN-AUDIO.
 Range: -#x8000000 to #x7FFFFFFF
 Little-endian.")
-(defparameter *audio-f32* #x8120
+(cffi:defcfun ("audio_f32" audio-f32) :uint16
   "Audio format used in OPEN-AUDIO.
 Little-endian.")
 
 (cffi:defcfun ("open_audio" open-audio) :bool
   "Open an audio device.
-AUDIO-FORMAT is one of *AUDIO-U8*, *AUDIO-S8*, etc.
+AUDIO-FORMAT is one of AUDIO-U8, AUDIO-S8, etc.
 
 SAMPLES-PER-SECOND e.g. 44100 for high quality.
 
@@ -247,9 +248,9 @@ AUDIO-DEVICE-BUFFER-SIZE-IN-SAMPLES, but in bytes. See SAMPLE-SIZE-IN-BYTES."
 
 (defun sample-size-in-bytes (audio-format num-channels)
   "Return the size in bytes of a sample
-AUDIO-FORMAT is one of *AUDIO-U8*, *AUDIO-S8*, etc.
+AUDIO-FORMAT is one of AUDIO-U8, AUDIO-S8, etc.
 NUM-CHANNELS is 1 for mono, 2 for stereo."
-  (* (floor (logand #xFF audio-format) 8)
+  (* (format-byte-size audio-format)
      num-channels))
 
 (cffi:defcfun ("ticks" ticks) :int
@@ -278,7 +279,7 @@ TEST-AUDIO example.")
 (defparameter *audio-device-buffer-size-in-samples* 2048
   "The size (in samples) of the buffer on the audio device. 
 Should be a power of 2. Used in the TEST-AUDIO example.")
-(defparameter *audio-format* *audio-s16*
+(defparameter *audio-format* (audio-s16)
   "The audio format to use in the TEST-AUDIO example.")
 
 (defun signed-int16 (v)
@@ -342,8 +343,8 @@ and return the result as an array of bytes."
     result-array))
 
 (defun test-audio ()
-  "Play 2-channel audio. Each channel plays a different frequency for 3 seconds,
-then the program ends."
+  "Play 2-channel audio. Each channel simultaneously plays a different frequency
+for 3 seconds, then the program ends."
   ;; Create a new window titled Audio Test of width,height=200,200.
   (with-init "Audio Test" 200 200
     ;; Clear the screen to black and display it.

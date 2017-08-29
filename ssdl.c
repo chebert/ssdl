@@ -34,7 +34,7 @@ int init(const char *title, int width, int height) {
 	return success;
 }
 
-void flip() {
+void display() {
 	// Flip the back buffer.
 	SDL_RenderPresent(renderer);
 }
@@ -296,6 +296,14 @@ void play_audio() {
 	SDL_PauseAudio(0);
 }
 
+int format_byte_size(SDL_AudioFormat fmt) { return (0xFF & fmt) >> 3; }
+SDL_AudioFormat audio_u8() { return AUDIO_U8; }
+SDL_AudioFormat audio_s8() { return AUDIO_S8; }
+SDL_AudioFormat audio_s16() { return AUDIO_S16; }
+SDL_AudioFormat audio_u16() { return AUDIO_U16; }
+SDL_AudioFormat audio_s32() { return AUDIO_S32; }
+SDL_AudioFormat audio_f32() { return AUDIO_F32; }
+
 int open_audio(SDL_AudioFormat fmt, int freq, int num_channels, int num_samples, int buffer_bytes) {
 	// Open an audio device with the provided parameters,
 	// and create the audio buffer of size buffer_bytes.
@@ -431,7 +439,7 @@ static int test_main() {
 	draw_texture(tex, 32, 32, 32, 32, 100, 100, 32, 32, 0.0, 0, 0, flip_none());
 	draw_color(255, 0, 0, 255);
 	draw_rect(10, 10, 20, 30, 1);
-	flip();
+	display();
 	int q = 0;
 	while (!q) {
 		while (poll_event()) {
