@@ -59,23 +59,24 @@ texture."
 DRAW-TEXTURE call.")
 (cffi:defcfun ("flip_horizontal" flip-horizontal) :uint32
   "Flag that specifies texture should be flipped horizontally when used in
-DRAW-TEXTURE call. Can be OR'd with FLIP-VERTICAL")
+DRAW-TEXTURE call.")
 (cffi:defcfun ("flip_vertical" flip-vertical) :uint32
   "Flag that specifies texture should be flipped vertically when used in
-DRAW-TEXTURE call. Can be OR'd with FLIP-HORIZONTAL")
+DRAW-TEXTURE call.")
+(cffi:defcfun ("flip_horizontal_and_vertical" flip-horizontal-and-vertical)
+    :uint32
+  "Flag that specifies texture should be flipped vertically when used in
+DRAW-TEXTURE call.")
 
 (cffi:defcfun ("draw_texture" draw-texture) :void
   "Draw the source rectangle (SX,SY,SW,SH) from TEXTURE to the destination
-rectangle (DX,DY,DW,DH) stretching or squashing to fit. Rotate the texture
-ANGLE degrees about the pivot offset (PX,PY). 
+rectangle (DX,DY,DW,DH) stretching or squashing to fit.
 Flip the drawing according to flip-flags"
   (texture :pointer)
   (sx :int) (sy :int)
   (sw :int) (sh :int)
   (dx :int) (dy :int)
   (dw :int) (dh :int)
-  (angle :double)
-  (px :int) (py :int)
   (flip-flags :uint32))
 
 (cffi:defcfun ("free_texture" free-texture) :void

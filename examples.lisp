@@ -295,19 +295,6 @@ Shows angle, pivot, flipping, animation, and stretching."
 	     (draw-color 0 0 0 255)
 	     (clear)
 
-	     ;; Draw a megaman, spinning around his center.
-	     (draw-texture
-	      texture
-	      ;; Source rectangle of the megasheet.bmp spritesheet.
-	      2 2 48 48
-	      ;; Destination rectangle on the window.
-	      10 10 48 48
-	      ;; Angle in degrees, rotating over time
-	      (* 1d0 (mod (floor (ticks) 15) 360))
-	      ;; Pivot is at the center of the destination rectangle.
-	      (/ 48 2) (/ 48 2)
-	      (flip-none))
-
 	     ;; Draw a big megaman.
 	     (draw-texture
 	      texture
@@ -315,8 +302,6 @@ Shows angle, pivot, flipping, animation, and stretching."
 	      ;; Destination rectangle is twice as big.
 	      ;; Stretched to be wider than tall.
 	      100 10 (* 48 3) (* 48 2)
-	      0.0d0
-	      0 0
 	      (flip-none))
 
 	     ;;; Draw flipped megamen
@@ -325,17 +310,13 @@ Shows angle, pivot, flipping, animation, and stretching."
 	      texture
 	      2 2 48 48
 	      10 100 48 48
-	      0.0d0
-	      0 0
 	      (flip-horizontal))
 	     ;; Flipped both ways
 	     (draw-texture
 	      texture
 	      2 2 48 48
 	      40 100 48 48
-	      0.0d0
-	      0 0
-	      (logior (flip-horizontal) (flip-vertical)))
+	      (flip-horizontal-and-vertical))
 
 	     ;; Draw animated
 	     (draw-texture
@@ -343,8 +324,6 @@ Shows angle, pivot, flipping, animation, and stretching."
 	      ;; Animate the x coordinate of the sprite
 	      (+ 2 (* (+ 3 (mod (floor (ticks) 100) 4)) 51)) 2 48 48
 	      100 100 48 48
-	      0d0
-	      0 0
 	      (flip-none))
 
 	     ;; Display the new drawings
@@ -374,7 +353,7 @@ Shows angle, pivot, flipping, animation, and stretching."
        texture
        2 2 48 48
        10 10 (* 2 48) (* 2 48)
-       0d0 0 0 (flip-none))
+       (flip-none))
 
       ;; Make semi-transparent.
       (texture-color-mod texture 255 255 255 128)
@@ -382,7 +361,7 @@ Shows angle, pivot, flipping, animation, and stretching."
        texture
        2 2 48 48
        150 10 (* 2 48) (* 2 48)
-       0d0 0 0 (flip-none))
+       (flip-none))
 
       (display)
       (delay 3000)
@@ -438,7 +417,7 @@ Shows angle, pivot, flipping, animation, and stretching."
        texture
        0 0 40 40
        10 10 80 80
-       0d0 0 0 (flip-none))
+       (flip-none))
       (display)
 
       (delay 3000)
@@ -499,7 +478,7 @@ Quit after a few seconds."
       (draw-texture texture
 		    0 0 width height
 		    0 0 width height
-		    0d0 0 0 (flip-none))
+		    (flip-none))
       (display)
       (delay 3000)
       (free-texture texture))))
