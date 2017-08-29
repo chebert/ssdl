@@ -1,13 +1,37 @@
 Super-Simple DirectMedia Layer.
+===============================
+
 Simplified wrapper around SDL meant for one-window projects
-that just want the bare essentials.
+that just want a simple foreign function interface with the bare essentials.
 
-Wrapper removes some lower-level details.
-Hides structures behind functions and removes audio callback
-to make FFI much less complicated. Only uses SDL2.0.4.
+SSDL removes many of the lower-level details in SDL.
 
-Supports exactly one window and up to one audio device.
-Can draw textures (angled and/or flipped) and rectangles and clear the screen.
-Supports one keyboard, one mouse and many joysticks (buttons/axes only).
-Supports loading bitmaps with magenta masked out.
+* hides structures 
+* hides enums
+* removes callbacks
 
+making the FFI (foreign function interface) much less complicated.
+SSDL is extremely tiny and only has two dynamic library files: SSDL and version
+2.0.4 of SDL.
+
+Features:
+* exactly one window
+* one audio device
+* writing bytes (almost) directly to the audio buffer
+* loading bitmaps, but masking magenta pixels out
+* drawing textures
+* rotating textures
+* flipping textures horizontally/vertically
+* modulating the color of textures
+* alpha blending
+* drawing rectangle outlines
+* drawing filled rectangles
+* keyboard input
+* mouse input
+* multiple joystick inputs
+
+In fact, that's it. Everything else is up to you. Simple. Super-Simple. SS. 
+Direct. Super Direct. Super-Simple Direct. media. Super Layer. Direct Layer.
+Super-Simple media.
+
+SSDL.
