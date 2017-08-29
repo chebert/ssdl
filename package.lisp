@@ -76,7 +76,12 @@
    #:audio-f32
 
    #:ticks
-   #:delay))
+   #:delay
+   #:make-texture-from-pixels
+   #:make-texture
+   #:render-to-texture
+   #:texture-color-mod
+   #:render-to-window))
 
 (defpackage #:ssdl-examples
   (:use #:cl #:ssdl)
@@ -97,4 +102,5 @@
    #:byte1
    #:byte2
    #:*num-samples-written*
-   #:sine-audio))
+   #:sine-audio
+   #:test-pixel-texture))

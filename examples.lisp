@@ -407,3 +407,95 @@ Shows angle, pivot, flipping, animation, and stretching."
 
     (display)
     (delay 3000)))
+
+(defun test-texture-target ()
+  "Make a texture that can be drawn to, and then draw it to the screen."
+  (with-init "Test texture target" 640 480
+    (let* ((width 40)
+	   (height 40)
+	   (texture (make-texture width height)))
+
+      ;; Draw a couple of green rects on a magenta background
+      ;; to the texture.
+      (render-to-texture texture)
+      (draw-color 255 0 255 255)
+      (clear)
+      (draw-color 0 255 0 255)
+      (draw-rect 0 0 20 20 t)
+
+      (draw-color 0 255 0 120)
+      (draw-rect 20 20 20 20 nil)
+      (display)
+
+      (render-to-window)
+      (draw-color 0 0 0 255)
+      (clear)
+      (draw-texture
+       texture
+       0 0 40 40
+       10 10 80 80
+       0d0 0 0 (flip-none))
+      (display)
+
+      (delay 3000)
+      (free-texture texture))))
+
+(defun test-pixel-texture ()
+  "Make a texture from an array of pixels and draw it to the screen.
+Quit after a few seconds."
+  (with-init "Test Pixel Texture" 640 480
+    (let* ((width 20)
+	   (height 40)
+	   (num-pixels (* width height))
+	   ;; Pixels are 4 bytes: R,G,B,A (in that order)
+	   (num-bytes (* num-pixels 4))
+	   ;; the index of the next byte to be written to the pixel array
+	   (next-byte 0)
+	   ;; The index of the next pixel to be written to the next pixel
+	   (next-pixel 0)
+	   (texture nil))
+      (let (;; The array of pixels that will become the texture.
+	    (pixels (make-array num-bytes :element-type '(unsigned-byte 8))))
+	(loop while (< next-byte num-bytes)
+	   do
+	     (cond
+	       ;; Create a checkerboard pattern
+	       ((eq (zerop (mod (floor next-pixel 5) 2))
+		    (= 1 (mod (floor next-pixel (* 5 width)) 2)))
+		;; Red
+		(setf (aref pixels next-byte) 255)
+		(incf next-byte)
+		;; Green
+		(setf (aref pixels next-byte) 0)
+		(incf next-byte)
+		;; Blue
+		(setf (aref pixels next-byte) 0)
+		(incf next-byte)
+		;; Alpha
+		(setf (aref pixels next-byte) 128)
+		(incf next-byte))
+	       (t
+		;; Red
+		(setf (aref pixels next-byte) 0)
+		(incf next-byte)
+		;; Green
+		(setf (aref pixels next-byte) 0)
+		(incf next-byte)
+		;; Blue
+		(setf (aref pixels next-byte) 255)
+		(incf next-byte)
+		;; Alpha
+		(setf (aref pixels next-byte) 200)
+		(incf next-byte)))
+	     (incf next-pixel))
+	(setq texture (make-texture-from-pixels width height pixels)))
+      
+      (draw-color 0 255 0 255)
+      (clear)
+      (draw-texture texture
+		    0 0 width height
+		    0 0 width height
+		    0d0 0 0 (flip-none))
+      (display)
+      (delay 3000)
+      (free-texture texture))))

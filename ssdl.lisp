@@ -269,3 +269,27 @@ NOTE: Count on a delay granularity of *at least* 10 ms."
   "Return the scancode given the NAME. See SCANCODE-NAME.
 Consider obtaining scancodes needed all at once and storing in variables."
   (name :string))
+
+(cffi:defcfun ("make_texture_from_pixels" make-texture-from-pixels%) :pointer
+  (width :int)
+  (height :int)
+  (pixels :pointer))
+(defun make-texture-from-pixels (width height pixel-bytes)
+  "Make a new texture from the given byte array of PIXELS.
+A pixel is a 32-bit RGBA value (in that order)."
+  (cffi:with-foreign-object (arr :uint8 (length pixel-bytes))
+    (loop for i below (length pixel-bytes)
+       do (setf (cffi:mem-aref arr :uint8 i) (aref pixel-bytes i)))
+    (make-texture-from-pixels% width height arr)))
+
+(cffi:defcfun ("make_texture" make-texture) :pointer
+  "Make a new texture that can be used as a render target."
+  (width :int)
+  (height :int))
+
+(cffi:defcfun ("render_to_texture" render-to-texture) :void
+  "Set the render target to be the given texture instead of the screen."
+  (texture :pointer))
+(cffi:defcfun ("render_to_window" render-to-window) :void
+  "Set the render target back to being the screen, after RENDER-TO-TEXTURE
+has been called.")

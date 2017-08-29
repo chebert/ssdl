@@ -1,5 +1,3 @@
-// NOTE: Compile with g++ to avoid cannot connect to Mir server error.
-
 #include <SDL2/SDL.h>
 #include <assert.h>
 #include <math.h>
@@ -8,6 +6,7 @@ static SDL_Window* window;
 static SDL_Renderer* renderer;
 
 void quit() {
+	// Quit SDL and close the audio.
 	SDL_Quit();
 }
 
@@ -65,6 +64,7 @@ SDL_Texture* load_bmp(const char* path) {
 	return tex;
 }
 
+// Flip flags to be used in draw_texture()
 SDL_RendererFlip flip_none() { return SDL_FLIP_NONE; }
 SDL_RendererFlip flip_horizontal() { return SDL_FLIP_HORIZONTAL; }
 SDL_RendererFlip flip_vertical() { return SDL_FLIP_VERTICAL; }
@@ -86,6 +86,7 @@ void draw_texture(SDL_Texture* tex,
 }
 
 void free_texture(SDL_Texture* tex) {
+	// Free the memory held by tex
 	SDL_DestroyTexture(tex);
 }
 
@@ -101,6 +102,7 @@ int poll_event() {
 	return SDL_PollEvent(&event);
 }
 
+// Keyboard event accessors
 int is_key_down() { return event.type == SDL_KEYDOWN; }
 int is_key_up() { return event.type == SDL_KEYUP; }
 
@@ -116,6 +118,7 @@ int is_ralt() { return KMOD_RALT & event.key.keysym.mod; }
 int is_num() { return KMOD_NUM & event.key.keysym.mod; }
 int is_caps() { return KMOD_CAPS & event.key.keysym.mod; }
 
+// Mouse event accessors
 int is_mouse_motion() { return event.type == SDL_MOUSEMOTION; }
 int is_mouse_button_down() { return event.type == SDL_MOUSEBUTTONDOWN; }
 int is_mouse_button_up() { return event.type == SDL_MOUSEBUTTONUP; }
@@ -137,6 +140,7 @@ int mouse_y() {
 	}
 }
 
+// Joystick event accessors
 int is_joy_added() { return event.type == SDL_JOYDEVICEADDED; }
 int is_joy_removed() { return event.type == SDL_JOYDEVICEREMOVED; }
 int joy_id() {
@@ -169,12 +173,14 @@ static struct {
 
 int audio_available() {
 	// Number of bytes that can be written to the ring buffer
+	// Call inside of a SDL_LockAudio block
 	return audio.capacity - audio.size;
 }
 
 void write_audio(unsigned char* src, int n) {
 	// Write n bytes of audio from src into the ring buffer.
-	// Assume that a lock has been acquired.
+	// Call inside of a SDL_LockAudio block
+
 	// Assume that n <= audio.size
 	assert(n <= audio_available());
 
@@ -239,6 +245,7 @@ static void read_audio(unsigned char* dest, int n) {
 
 void clear_audio() {
 	// Clear any queued audio from the ring buffer.
+	// Call inside of a SDL_LockAudio block
 	audio.start = 0;
 	audio.end = 0;
 	audio.size = 0;
@@ -290,13 +297,17 @@ static void write_sine() {
 }
 
 void stop_audio() {
+	// Pause/stop playback of audio.
 	SDL_PauseAudio(1);
 }
 void play_audio() {
+	// Resume/Start playback of audio.
 	SDL_PauseAudio(0);
 }
 
+// Return the size in bytes a 1-channel sample of the given audio format is
 int format_byte_size(SDL_AudioFormat fmt) { return (0xFF & fmt) >> 3; }
+// Audio formats used in open_audio()
 SDL_AudioFormat audio_u8() { return AUDIO_U8; }
 SDL_AudioFormat audio_s8() { return AUDIO_S8; }
 SDL_AudioFormat audio_s16() { return AUDIO_S16; }
@@ -393,26 +404,85 @@ static int test_ring_buffer() {
 }
 
 int ticks() {
+	// Milliseconds elapsed since init() was called
 	return SDL_GetTicks();
 }
 
-void delay(int ms) { SDL_Delay(ms); }
-const char* scancode_name(SDL_Scancode sc) { return SDL_GetScancodeName(sc); }
-SDL_Scancode scancode_from_name(const char* str) { return SDL_GetScancodeFromName(str); }
+void delay(int milliseconds) {
+	// Pause execution for at least milliseconds time.
+	// Yield execution.
+	// Call delay(1) to yield execution in busy loops.
+	SDL_Delay(milliseconds);
+}
+const char* scancode_name(SDL_Scancode sc) {
+	// Return the string name of the scancode.
+	// String can be used in scancode_from_name()
+	return SDL_GetScancodeName(sc);
+}
+SDL_Scancode scancode_from_name(const char* str) {
+	// Return the scancode given the string name.
+	return SDL_GetScancodeFromName(str);
+}
 
 SDL_Joystick* open_joystick(int device_index) {
+	// Open the Nth plugged-in joystick.
+	// device_index is the joy_id() of an joystick add event.
+	// Start reading for button/axis events.
 	return SDL_JoystickOpen(device_index);
 }
 int joystick_id(SDL_Joystick* js) {
+	// Return the id of the joystick.
+	// Used in button/axis/removed events.
 	return SDL_JoystickInstanceID(js);
 }
 void close_joystick(SDL_Joystick *js) {
+	// Close a joystick opened with open_joystick
 	SDL_JoystickClose(js);
 }
 
 void texture_color_mod(SDL_Texture* tex, Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
+	// Modulate the color and alpha of the texture when drawing to the screen.
+	// Clear modulation with 255,255,255,255
 	SDL_SetTextureColorMod(tex, r, g, b);
 	SDL_SetTextureAlphaMod(tex, a);
+}
+
+SDL_Texture* make_texture_from_pixels(int width, int height, const void* pixels) {
+	// Create a new texture from an array of pixels.
+	// Pixels are in 32-bit RGBA format.
+	SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ABGR8888,
+			SDL_TEXTUREACCESS_STATIC, width, height);
+	if (!texture) {
+		fprintf(stderr, "Failed to make a texture. %s\n", SDL_GetError());
+	} else {
+		if (SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND)) {
+			fprintf(stderr, "Failed to set the blendmode for the texture. %s\n", SDL_GetError());
+		}
+		if (SDL_UpdateTexture(texture, NULL, pixels, width*4)) {
+			fprintf(stderr, "Failed to set the pixels for the texture. %s\n", SDL_GetError());
+		}
+	}
+	return texture;
+}
+
+SDL_Texture* make_texture(int width, int height) {
+	// Create a 32-bit RGBA texture that can be rendered to
+	// using render_to_texture.
+	SDL_Texture* tex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ABGR8888,
+			SDL_TEXTUREACCESS_TARGET, width, height);
+	if (!tex) {
+		fprintf(stderr, "Failed to make a texture. %s\n", SDL_GetError());
+	}
+	return tex;
+}
+
+void render_to_texture(SDL_Texture* texture) {
+	// Render to a texture created with make_texture()
+	SDL_SetRenderTarget(renderer, texture);
+}
+void render_to_window() {
+	// Render to the screen. Use after render_to_texture()
+	SDL_SetRenderTarget(renderer, NULL);
 }
 
 static int test_main() {
