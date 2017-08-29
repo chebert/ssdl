@@ -415,9 +415,11 @@ Shows angle, pivot, flipping, animation, and stretching."
 	   (height 40)
 	   (texture (make-texture width height)))
 
+      ;; Switch to rendering to the new texture.
+      (render-to-texture texture)
       ;; Draw a couple of green rects on a magenta background
       ;; to the texture.
-      (render-to-texture texture)
+
       (draw-color 255 0 255 255)
       (clear)
       (draw-color 0 255 0 255)
@@ -425,11 +427,13 @@ Shows angle, pivot, flipping, animation, and stretching."
 
       (draw-color 0 255 0 120)
       (draw-rect 20 20 20 20 nil)
-      (display)
 
+      ;; Now switch back to rendering to the window.
       (render-to-window)
+      ;; Clear to black
       (draw-color 0 0 0 255)
       (clear)
+      ;; Draw the texture.
       (draw-texture
        texture
        0 0 40 40
