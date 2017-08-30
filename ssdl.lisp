@@ -180,16 +180,24 @@ Return the amount of audio bytes that can be written to the audio buffer.")
   (source (:pointer :uint8))
   (n :int))
 
+(defmacro with-foreign-uint8-array ((name bytes) &body body)
+  "Creates a new C byte array, the same length as byte-vector,
+and copies all the data from byte-vector into it."
+  (let ((length (gensym)))
+    `(let ((,length (length ,bytes)))
+       (declare (type (simple-array (unsigned-byte 8)) ,bytes))
+       (cffi:with-foreign-object (,name :uint8 ,length)
+	 (loop for i below ,length
+	    do
+	      (setf (cffi:mem-aref ,name :uint8 i) (aref ,bytes i)))
+	 ,@body))))
+
 (defun write-audio (bytes)
   "MUST BE CALLED in WITH-AUDIO-LOCK if sound is playing.
 Write the (simple-array (unsigned-byte 8)) bytes to the audio buffer.
 Audio will play silence if no audio is present in the buffer."
-  (declare (type (simple-array (unsigned-byte 8)) bytes))
-  (let ((len (length bytes)))
-    (cffi:with-foreign-object (carr :uint8 len)
-      (loop for i below len
-	 do (setf (cffi:mem-aref carr :uint8 i) (aref bytes i)))
-      (write-audio% carr len))))
+  (with-foreign-uint8-array (carr bytes)
+    (write-audio% carr (length bytes))))
 
 (cffi:defcfun ("clear_audio" clear-audio) :void
   "MUST BE CALLED in WITH-AUDIO-LOCK if sound is playing.
@@ -265,9 +273,7 @@ Consider obtaining scancodes needed all at once and storing in variables."
   "Make a new texture from the given byte array of PIXELS.
 A pixel is a 32-bit RGBA value (in that order). E.g.
 #(r1 g1 b1 a1 r2 g2 b2 a2 ...)"
-  (cffi:with-foreign-object (arr :uint8 (length pixel-bytes))
-    (loop for i below (length pixel-bytes)
-       do (setf (cffi:mem-aref arr :uint8 i) (aref pixel-bytes i)))
+  (with-foreign-uint8-array (arr pixel-bytes)
     (make-texture-from-pixels% width height arr)))
 
 (cffi:defcfun ("make_texture" make-texture) :pointer
