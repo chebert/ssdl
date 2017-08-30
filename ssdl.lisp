@@ -12,7 +12,7 @@
 (cffi:defcfun ("quit" quit) :void
   "Quit SDL. Close the audio-stream.")
 
-(cffi:defcfun ("init" init) :bool
+(cffi:defcfun ("init" init) :boolean
   "Initialize SDL and create a window with the given title and dimensions."
   (title :string)
   (width :int)
@@ -38,7 +38,7 @@ Draw an outline if FILLED? is false, otherwise draw solid."
   (y :int)
   (w :int)
   (h :int)
-  (filled? :bool))
+  (filled? :boolean))
 
 (cffi:defcfun ("load_bmp" load-bmp) :pointer
   "Load a 24-bit RGB Bitmap with a color mask of magenta (255,0,255).
@@ -92,47 +92,47 @@ Colors are in the range 0-255.
   (b :uint8)
   (a :uint8))
 
-(cffi:defcfun ("poll_event" poll-event) :bool
+(cffi:defcfun ("poll_event" poll-event) :boolean
   "Poll for the next event. True if there were more events,
 false if all events in the queue have been exhausted.
 The last polled event is held in a variable checked by functions
 like KEY-DOWN?, MOUSE-MOTION? and QUIT?, etc.
 The event remains the same until POLL-EVENT is called again.")
-(cffi:defcfun ("is_key_down" key-down?) :bool
+(cffi:defcfun ("is_key_down" key-down?) :boolean
   "True if key press event.")
-(cffi:defcfun ("is_key_up" key-up?) :bool
+(cffi:defcfun ("is_key_up" key-up?) :boolean
   "True if key released event.")
-(cffi:defcfun ("is_repeat" repeat?) :bool
+(cffi:defcfun ("is_repeat" repeat?) :boolean
   "True if key press is repeated.")
 (cffi:defcfun ("scancode" scancode) :uint32
   "Return the scancode of the pressed or released key.")
 
-(cffi:defcfun ("is_mouse_motion" mouse-motion?) :bool
+(cffi:defcfun ("is_mouse_motion" mouse-motion?) :boolean
   "True if mouse moved event.")
-(cffi:defcfun ("is_mouse_button_down" mouse-button-down?) :bool
+(cffi:defcfun ("is_mouse_button_down" mouse-button-down?) :boolean
   "True if mouse button pressed event.")
-(cffi:defcfun ("is_mouse_button_up" mouse-button-up?) :bool
+(cffi:defcfun ("is_mouse_button_up" mouse-button-up?) :boolean
   "True if mouse button released event.")
-(cffi:defcfun ("is_lmb" lmb?) :bool
+(cffi:defcfun ("is_lmb" lmb?) :boolean
   "True if the mouse button pressed was the left mouse button.")
-(cffi:defcfun ("is_mmb" mmb?) :bool
+(cffi:defcfun ("is_mmb" mmb?) :boolean
   "True if the mouse button pressed was the middle mouse button.")
-(cffi:defcfun ("is_rmb" rmb?) :bool
+(cffi:defcfun ("is_rmb" rmb?) :boolean
   "True if the mouse button pressed was the right mouse button.")
 (cffi:defcfun ("mouse_x" mouse-x) :int
   "Return the x position of the mouse for mouse move or mouse button events.")
 (cffi:defcfun ("mouse_y" mouse-y) :int
   "Return the y position of the mouse for mouse move or mouse button events.")
 
-(cffi:defcfun ("is_joy_added" joy-added?) :bool
+(cffi:defcfun ("is_joy_added" joy-added?) :boolean
   "True if event indicates a joystick was connected.")
-(cffi:defcfun ("is_joy_removed" joy-removed?) :bool
+(cffi:defcfun ("is_joy_removed" joy-removed?) :boolean
   "True if event indicates a joystick was removed")
-(cffi:defcfun ("is_joy_down" joy-down?) :bool
+(cffi:defcfun ("is_joy_down" joy-down?) :boolean
   "True if event is joy button press")
-(cffi:defcfun ("is_joy_up" joy-up?) :bool
+(cffi:defcfun ("is_joy_up" joy-up?) :boolean
   "True if event is joy button release")
-(cffi:defcfun ("is_joy_axis" joy-axis?) :bool
+(cffi:defcfun ("is_joy_axis" joy-axis?) :boolean
   "True if event is joy axis motion")
 (cffi:defcfun ("joy_id" joy-id) :int
   "Return index of joystick associated with joystick event")
@@ -143,7 +143,7 @@ The event remains the same until POLL-EVENT is called again.")
 (cffi:defcfun ("joy_axis_value" joy-axis-value) :int
   "Return value of axis for a joystick axis event")
 
-(cffi:defcfun ("is_quit" quit?) :bool
+(cffi:defcfun ("is_quit" quit?) :boolean
   "True if quit event.")
 
 (cffi:defcfun ("open_joystick" open-joystick) :pointer
@@ -221,7 +221,7 @@ Little-endian.")
   "Audio format used in OPEN-AUDIO. 32-bit floating point.
 Little-endian.")
 
-(cffi:defcfun ("open_audio" open-audio) :bool
+(cffi:defcfun ("open_audio" open-audio) :boolean
   "Open an audio device.
 AUDIO-FORMAT is one of AUDIO-U8, AUDIO-S8, etc.
 
