@@ -281,7 +281,6 @@ A pixel is a 32-bit RGBA value (in that order). E.g.
   (declare (type (simple-array (unsigned-byte 8)) pixel-bytes))
   #+sbcl
   (sb-sys:with-pinned-objects (pixel-bytes)
-    ;; Avoid copying the vector
     (make-texture-from-pixels% width height (sb-sys:vector-sap pixel-bytes)))
   #-sbcl
   (with-foreign-uint8-array (arr pixel-bytes)
