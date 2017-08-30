@@ -263,7 +263,8 @@ Consider obtaining scancodes needed all at once and storing in variables."
   (pixels :pointer))
 (defun make-texture-from-pixels (width height pixel-bytes)
   "Make a new texture from the given byte array of PIXELS.
-A pixel is a 32-bit RGBA value (in that order)."
+A pixel is a 32-bit RGBA value (in that order). E.g.
+#(r1 g1 b1 a1 r2 g2 b2 a2 ...)"
   (cffi:with-foreign-object (arr :uint8 (length pixel-bytes))
     (loop for i below (length pixel-bytes)
        do (setf (cffi:mem-aref arr :uint8 i) (aref pixel-bytes i)))
