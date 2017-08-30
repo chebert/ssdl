@@ -185,7 +185,6 @@ Return the amount of audio bytes that can be written to the audio buffer.")
 and copies all the data from byte-vector into it."
   (let ((length (gensym)))
     `(let ((,length (length ,bytes)))
-       (declare (type (simple-array (unsigned-byte 8)) ,bytes))
        (cffi:with-foreign-object (,name :uint8 ,length)
 	 (loop for i below ,length
 	    do
@@ -196,6 +195,11 @@ and copies all the data from byte-vector into it."
   "MUST BE CALLED in WITH-AUDIO-LOCK if sound is playing.
 Write the (simple-array (unsigned-byte 8)) bytes to the audio buffer.
 Audio will play silence if no audio is present in the buffer."
+  (declare (type (simple-array (unsigned-byte 8)) bytes))
+  #+sbcl
+  (sb-sys:with-pinned-objects (bytes)
+    (write-audio% (sb-sys:vector-sap bytes) (length bytes)))
+  #-sbcl
   (with-foreign-uint8-array (carr bytes)
     (write-audio% carr (length bytes))))
 
@@ -273,6 +277,12 @@ Consider obtaining scancodes needed all at once and storing in variables."
   "Make a new texture from the given byte array of PIXELS.
 A pixel is a 32-bit RGBA value (in that order). E.g.
 #(r1 g1 b1 a1 r2 g2 b2 a2 ...)"
+  (declare (type (simple-array (unsigned-byte 8)) pixel-bytes))
+  #+sbcl
+  (sb-sys:with-pinned-objects (pixel-bytes)
+    ;; Avoid copying the vector
+    (make-texture-from-pixels% width height (sb-sys:vector-sap pixel-bytes)))
+  #-sbcl
   (with-foreign-uint8-array (arr pixel-bytes)
     (make-texture-from-pixels% width height arr)))
 
