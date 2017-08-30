@@ -5,7 +5,8 @@
 (in-package #:ssdl)
 
 (cffi:define-foreign-library :ssdl
-  (t #.(asdf:system-relative-pathname :ssdl "libssdl.so")))
+  (:unix  #.(asdf:system-relative-pathname :ssdl "libssdl.so"))
+  (t #.(asdf:system-relative-pathname :ssdl "ssdl.dll")))
 
 (cffi:use-foreign-library :ssdl)
 
