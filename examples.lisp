@@ -25,12 +25,13 @@ Should be a power of 2. Used in the TEST-AUDIO example.")
 (defparameter *num-samples-written* 0
   "Keeps track of how many samples have been written by SINE-AUDIO.")
 
+(defun byte-array (num) (make-array num :element-type '(unsigned-byte 8)))
+
 (defun sine-audio (num-bytes-to-write)
   "Generate num-bytes-to-write of the next part of a 2-channel sine-wave
 and return the result as an array of bytes."
   (let* (;; contains the audio data to be written
-	 (result-array (make-array num-bytes-to-write
-				   :element-type '(unsigned-byte 8)))
+	 (result-array (byte-array num-bytes-to-write))
 	 ;; bytes have been written to result-array
 	 (num-bytes-written 0))
 
@@ -433,7 +434,7 @@ Quit after a few seconds."
 	   (next-pixel 0)
 	   (texture nil))
       (let (;; The array of pixels that will become the texture.
-	    (pixels (make-array num-bytes :element-type '(unsigned-byte 8))))
+	    (pixels (byte-array num-bytes)))
 	(loop while (< next-byte num-bytes)
 	   do
 	     (cond
@@ -477,3 +478,28 @@ Quit after a few seconds."
       (display)
       (delay 3000)
       (free-texture texture))))
+
+(defun test-pixels-to-window ()
+  "Set the pixels of the window directly."
+  (let ((width 200)
+	(height 200))
+    (with-init "Software Rendering" width height
+      (let ((pixels (byte-array (* width height 4)))
+	    (n 0))
+	(loop for row below height do
+	     (loop for col below width do
+		  (cond
+		    ((eq (zerop (mod (floor col 25) 2))
+			 (zerop (mod (floor row 40) 2)))
+		     (setf (aref pixels n) 255) (incf n)
+		     (setf (aref pixels n) 0) (incf n)
+		     (setf (aref pixels n) 0) (incf n)
+		     (setf (aref pixels n) 255) (incf n))
+		    (t
+		     (setf (aref pixels n) 0) (incf n)
+		     (setf (aref pixels n) 0) (incf n)
+		     (setf (aref pixels n) 255) (incf n)
+		     (setf (aref pixels n) 255) (incf n))x)))
+	(render-pixels-to-window pixels)
+	(display)
+	(delay 2000)))))

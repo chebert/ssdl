@@ -5,29 +5,52 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define STDERR stdout
+
 static SDL_Window* window;
 static SDL_Renderer* renderer;
+static SDL_Texture* window_pixels;
+static int window_width, window_height;
 
 void quit() {
+	if (window) SDL_DestroyWindow(window);
+	if (renderer) SDL_DestroyRenderer(renderer);
+	if (window_pixels) SDL_DestroyTexture(window_pixels);
+	window = NULL;
+	renderer = NULL;
+	window_pixels = NULL;
 	// Quit SDL and close the audio.
 	SDL_Quit();
 }
 
 int init(const char *title, int width, int height) {
-	// Return true if successful, otherwise false and prints error to stderr.
+	// Return true if successful, otherwise false and prints error to STDERR.
 	int success = 1;
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-		fprintf(stderr, "Failed to init: %s\n", SDL_GetError());
+		fprintf(STDERR, "Failed to init: %s\n", SDL_GetError());
 		success = 0;
 	}
+	if (window) SDL_DestroyWindow(window);
 	window = SDL_CreateWindow(title, 100, 100, width, height, 0);
 	if (!window) {
-		fprintf(stderr, "Failed to create a window: %s\n", SDL_GetError());
+		fprintf(STDERR, "Failed to create a window: %s\n", SDL_GetError());
 		success = 0;
 	}
+	window_width = width;
+	window_height = height;
+	if (renderer) SDL_DestroyRenderer(renderer);
 	renderer = SDL_CreateRenderer(window, -1, 0);
 	if (!renderer) {
-		fprintf(stderr, "Failed to create a renderer: %s\n", SDL_GetError());
+		fprintf(STDERR, "Failed to create a renderer: %s\n", SDL_GetError());
+		success = 0;
+	}
+	if (window_pixels) SDL_DestroyTexture(window_pixels);
+	window_pixels = SDL_CreateTexture(renderer,
+			SDL_PIXELFORMAT_ABGR8888,
+			SDL_TEXTUREACCESS_STREAMING,
+			width, height);
+	if (!window_pixels) {
+		fprintf(STDERR, "Failed to create a pixel back-buffer: %s\n", SDL_GetError());
 		success = 0;
 	}
 
@@ -332,11 +355,11 @@ int open_audio(SDL_AudioFormat fmt, int freq, int num_channels, int num_samples)
 
 	if (SDL_OpenAudio(&desired, &obtained) != 0) {
 		success = 0;
-		fprintf(stderr, "Failed to open audio: %s\n", SDL_GetError());
+		fprintf(STDERR, "Failed to open audio: %s\n", SDL_GetError());
 	}
 	if (obtained.format != desired.format) {
 		success = 0;
-		fprintf(stderr, "Failed to obtain desired audio spec: %s\n", SDL_GetError());
+		fprintf(STDERR, "Failed to obtain desired audio spec: %s\n", SDL_GetError());
 	}
 
 	int buffer_bytes = num_samples * format_byte_size(fmt) * num_channels;
@@ -457,13 +480,13 @@ SDL_Texture* make_texture_from_pixels(int width, int height, const void* pixels)
 	SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ABGR8888,
 			SDL_TEXTUREACCESS_STATIC, width, height);
 	if (!texture) {
-		fprintf(stderr, "Failed to make a texture. %s\n", SDL_GetError());
+		fprintf(STDERR, "Failed to make a texture. %s\n", SDL_GetError());
 	} else {
 		if (SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND)) {
-			fprintf(stderr, "Failed to set the blendmode for the texture. %s\n", SDL_GetError());
+			fprintf(STDERR, "Failed to set the blendmode for the texture. %s\n", SDL_GetError());
 		}
 		if (SDL_UpdateTexture(texture, NULL, pixels, width*4)) {
-			fprintf(stderr, "Failed to set the pixels for the texture. %s\n", SDL_GetError());
+			fprintf(STDERR, "Failed to set the pixels for the texture. %s\n", SDL_GetError());
 		}
 	}
 	return texture;
@@ -475,7 +498,7 @@ SDL_Texture* make_texture(int width, int height) {
 	SDL_Texture* tex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ABGR8888,
 			SDL_TEXTUREACCESS_TARGET, width, height);
 	if (!tex) {
-		fprintf(stderr, "Failed to make a texture. %s\n", SDL_GetError());
+		fprintf(STDERR, "Failed to make a texture. %s\n", SDL_GetError());
 	}
 	return tex;
 }
@@ -487,6 +510,15 @@ void render_to_texture(SDL_Texture* texture) {
 void render_to_window() {
 	// Render to the screen. Use after render_to_texture()
 	SDL_SetRenderTarget(renderer, NULL);
+}
+
+void render_pixels_to_window(Uint8 *pixels) {
+	void* dest;
+	int pitch;
+	SDL_LockTexture(window_pixels, NULL, &dest, &pitch);
+	memcpy(dest, (void*)pixels, window_width*window_height*4);
+	SDL_UnlockTexture(window_pixels);
+	SDL_RenderCopy(renderer, window_pixels, NULL, NULL);
 }
 
 static int test_main() {
