@@ -305,7 +305,8 @@ has been called.")
 (defun render-pixels-to-window (pixel-bytes)
   "Copy the pixel uint8 array, with dimensions window-width X window-height,
 to the window. A pixel is a 32-bit RGBA value (in that order). E.g.
-#(r1 g1 b1 a1 r2 g2 b2 a2 ...)"
+#(r1 g1 b1 a1 r2 g2 b2 a2 ...).
+Use this instead of MAKE-TEXTURE-FROM-PIXELS for software rendering."
   (declare (type (simple-array (unsigned-byte 8)) pixel-bytes))
   #+sbcl
   (sb-sys:with-pinned-objects (pixel-bytes)

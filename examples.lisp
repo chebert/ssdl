@@ -480,26 +480,35 @@ Quit after a few seconds."
       (free-texture texture))))
 
 (defun test-pixels-to-window ()
-  "Set the pixels of the window directly."
+  "Set the pixels of the window directly. Draws an elongated checkerboard
+pattern of red and green which fills the screen."
   (let ((width 200)
 	(height 200))
     (with-init "Software Rendering" width height
-      (let ((pixels (byte-array (* width height 4)))
-	    (n 0))
+      (let* ((bytes-per-pixel 4)
+	     (pixel-bytes (byte-array (* width height bytes-per-pixel)))
+	     ;; Index of the next byte to set.
+	     (n 0))
 	(loop for row below height do
 	     (loop for col below width do
+		;; Make a checkerboard pattern
 		  (cond
 		    ((eq (zerop (mod (floor col 25) 2))
+			 ;; Rectangular checkers
 			 (zerop (mod (floor row 40) 2)))
-		     (setf (aref pixels n) 255) (incf n)
-		     (setf (aref pixels n) 0) (incf n)
-		     (setf (aref pixels n) 0) (incf n)
-		     (setf (aref pixels n) 255) (incf n))
+		     ;; RGBA
+		     (setf (aref pixel-bytes n) 255) (incf n)
+		     (setf (aref pixel-bytes n) 0) (incf n)
+		     (setf (aref pixel-bytes n) 0) (incf n)
+		     (setf (aref pixel-bytes n) 255) (incf n))
 		    (t
-		     (setf (aref pixels n) 0) (incf n)
-		     (setf (aref pixels n) 0) (incf n)
-		     (setf (aref pixels n) 255) (incf n)
-		     (setf (aref pixels n) 255) (incf n))x)))
-	(render-pixels-to-window pixels)
+		     ;; RGBA
+		     (setf (aref pixel-bytes n) 0) (incf n)
+		     (setf (aref pixel-bytes n) 255) (incf n)
+		     (setf (aref pixel-bytes n) 0) (incf n)
+		     (setf (aref pixel-bytes n) 255) (incf n)))))
+
+	;; Copy the pixels to the window.
+	(render-pixels-to-window pixel-bytes)
 	(display)
 	(delay 2000)))))
