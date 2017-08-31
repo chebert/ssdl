@@ -213,6 +213,7 @@ Clear the audio buffer.")
   "Play/Resume audio playback.")
 
 ;; Audio Formats
+;; TODO: big endian and little endian
 (cffi:defcfun ("audio_u8" audio-u8) :uint16
   "Audio format used in OPEN-AUDIO. 8-bit unsigned int.
 Range: 0 to 255, centerpoint: 128")
@@ -221,19 +222,19 @@ Range: 0 to 255, centerpoint: 128")
 Range: -128 to 127")
 (cffi:defcfun ("audio_u16" audio-u16) :uint16
   "Audio format used in OPEN-AUDIO. 16-bit unsigned int.
-Range: 0 to 65535, centerpoint: 32768
-Little-endian.")
+Range: 0 to 65535, centerpoint: 32768"
+  (little-endian? :boolean))
 (cffi:defcfun ("audio_s16" audio-s16) :uint16
   "Audio format used in OPEN-AUDIO. 16-bit signed int.
-Range: -32768 to 32767
-Little-endian.")
+Range: -32768 to 32767"
+  (little-endian? :boolean))
 (cffi:defcfun ("audio_s32" audio-s32) :uint16
   "Audio format used in OPEN-AUDIO. 32-bit unsigned int.
-Range: -#x8000000 to #x7FFFFFFF
-Little-endian.")
+Range: -#x8000000 to #x7FFFFFFF"
+  (little-endian? :boolean))
 (cffi:defcfun ("audio_f32" audio-f32) :uint16
-  "Audio format used in OPEN-AUDIO. 32-bit floating point.
-Little-endian.")
+  "Audio format used in OPEN-AUDIO. 32-bit floating point."
+  (little-endian? :boolean))
 
 (cffi:defcfun ("open_audio" open-audio) :boolean
   "Open an audio device.

@@ -309,10 +309,14 @@ static int format_byte_size(SDL_AudioFormat fmt) { return (0xFF & fmt) >> 3; }
 // Audio formats used in open_audio()
 SDL_AudioFormat audio_u8() { return AUDIO_U8; }
 SDL_AudioFormat audio_s8() { return AUDIO_S8; }
-SDL_AudioFormat audio_s16() { return AUDIO_S16; }
-SDL_AudioFormat audio_u16() { return AUDIO_U16; }
-SDL_AudioFormat audio_s32() { return AUDIO_S32; }
-SDL_AudioFormat audio_f32() { return AUDIO_F32; }
+SDL_AudioFormat audio_s16(int is_little_endian)
+{ return is_little_endian ? AUDIO_S16LSB : AUDIO_S16MSB; }
+SDL_AudioFormat audio_u16(int is_little_endian)
+{ return is_little_endian ? AUDIO_U16LSB : AUDIO_U16MSB; }
+SDL_AudioFormat audio_s32(int is_little_endian)
+{ return is_little_endian ? AUDIO_S32LSB : AUDIO_S32MSB; }
+SDL_AudioFormat audio_f32(int is_little_endian)
+{ return is_little_endian ? AUDIO_F32LSB : AUDIO_F32MSB; }
 
 int open_audio(SDL_AudioFormat fmt, int freq, int num_channels, int num_samples) {
 	// Open an audio device with the provided parameters,

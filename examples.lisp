@@ -9,7 +9,7 @@ TEST-AUDIO example.")
 (defparameter *audio-device-buffer-size-in-samples* 2048
   "The size (in samples) of the buffer on the audio device. 
 Should be a power of 2. Used in the TEST-AUDIO example.")
-(defparameter *audio-format* (audio-s16)
+(defparameter *audio-format* (audio-s16 t)
   "The audio format to use in the TEST-AUDIO example.")
 
 (defun signed-int16 (v)
