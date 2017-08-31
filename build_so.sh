@@ -1,1 +1,1 @@
-gcc -fpic -shared -o libssdl.so ssdl.c -lSDL2
+gcc -fPIC -shared -o libssdl.so ssdl.c -lSDL2
