@@ -329,24 +329,14 @@ void play_audio() {
 }
 
 static int format_byte_size(SDL_AudioFormat fmt) { return (0xFF & fmt) >> 3; }
-// Audio formats used in open_audio()
-SDL_AudioFormat audio_u8() { return AUDIO_U8; }
-SDL_AudioFormat audio_s8() { return AUDIO_S8; }
-SDL_AudioFormat audio_s16(int is_little_endian)
-{ return is_little_endian ? AUDIO_S16LSB : AUDIO_S16MSB; }
-SDL_AudioFormat audio_u16(int is_little_endian)
-{ return is_little_endian ? AUDIO_U16LSB : AUDIO_U16MSB; }
-SDL_AudioFormat audio_s32(int is_little_endian)
-{ return is_little_endian ? AUDIO_S32LSB : AUDIO_S32MSB; }
-SDL_AudioFormat audio_f32(int is_little_endian)
-{ return is_little_endian ? AUDIO_F32LSB : AUDIO_F32MSB; }
 
-int open_audio(SDL_AudioFormat fmt, int freq, int num_channels, int num_samples) {
+int open_audio(int freq, int num_channels, int num_samples) {
 	// Open an audio device with the provided parameters,
 	// and create the audio buffer of size buffer_bytes.
 	// Return true if successful.
 	int success = 1;
 	SDL_AudioSpec desired, obtained;
+	SDL_AudioFormat fmt = AUDIO_S16LSB;
 	desired.format = audio.format = fmt;
 	desired.freq = audio.frequency = freq;
 	desired.channels = audio.channels = num_channels;
@@ -527,7 +517,7 @@ static int test_main() {
 		return 1;
 	}
 
-	if (open_audio(AUDIO_S16, 44100, 2, 2048)) {
+	if (open_audio(44100, 2, 2048)) {
 		play_audio();
 		int start_ticks = ticks();
 		while (ticks() - start_ticks < 300) {

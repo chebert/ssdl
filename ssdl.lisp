@@ -212,33 +212,9 @@ Clear the audio buffer.")
 (cffi:defcfun ("play_audio" play-audio) :void
   "Play/Resume audio playback.")
 
-;; Audio Formats
-;; TODO: big endian and little endian
-(cffi:defcfun ("audio_u8" audio-u8) :uint16
-  "Audio format used in OPEN-AUDIO. 8-bit unsigned int.
-Range: 0 to 255, centerpoint: 128")
-(cffi:defcfun ("audio_s8" audio-s8) :uint16
-  "Audio format used in OPEN-AUDIO. 8-bit signed int.
-Range: -128 to 127")
-(cffi:defcfun ("audio_u16" audio-u16) :uint16
-  "Audio format used in OPEN-AUDIO. 16-bit unsigned int.
-Range: 0 to 65535, centerpoint: 32768"
-  (little-endian? :boolean))
-(cffi:defcfun ("audio_s16" audio-s16) :uint16
-  "Audio format used in OPEN-AUDIO. 16-bit signed int.
-Range: -32768 to 32767"
-  (little-endian? :boolean))
-(cffi:defcfun ("audio_s32" audio-s32) :uint16
-  "Audio format used in OPEN-AUDIO. 32-bit unsigned int.
-Range: -#x8000000 to #x7FFFFFFF"
-  (little-endian? :boolean))
-(cffi:defcfun ("audio_f32" audio-f32) :uint16
-  "Audio format used in OPEN-AUDIO. 32-bit floating point."
-  (little-endian? :boolean))
-
 (cffi:defcfun ("open_audio" open-audio) :boolean
   "Open an audio device.
-AUDIO-FORMAT is one of AUDIO-U8, AUDIO-S8, etc.
+The audio format 16-bit signed little-endian integers.
 
 SAMPLES-PER-SECOND e.g. 44100 for high quality.
 
@@ -249,7 +225,6 @@ audio buffer used directly by the device. 2048, 4096, etc. For games you might
 calculate this based on the number of video frames of sound. E.g. write audio
 for 4 frames of video at 60Hz would be the closest power of 2 to
  4*SAMPLES-PER-SECOND/FPS."
-  (audio-format :uint16)
   (samples-per-second :int)
   (num-channels :int)
   (audio-device-buffer-size-in-samples :int))

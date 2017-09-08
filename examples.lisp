@@ -9,8 +9,6 @@ TEST-AUDIO example.")
 (defparameter *audio-device-buffer-size-in-samples* 2048
   "The size (in samples) of the buffer on the audio device. 
 Should be a power of 2. Used in the TEST-AUDIO example.")
-(defparameter *audio-format* (audio-s16 t)
-  "The audio format to use in the TEST-AUDIO example.")
 
 (defun signed-int16 (v)
   "Convert v to a 16-bit signed int."
@@ -82,8 +80,7 @@ for 3 seconds, then the program ends."
     (clear)
     (display)
 
-    (unless (open-audio *audio-format*
-			*samples/second*
+    (unless (open-audio *samples/second*
 			*num-channels*
 			*audio-device-buffer-size-in-samples*)
       (error "~&Failed to open audio. See stderr for details."))
