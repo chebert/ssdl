@@ -131,15 +131,6 @@ int is_key_up() { return event.type == SDL_KEYUP; }
 
 int is_repeat() { return event.key.repeat; }
 SDL_Scancode scancode() { return event.key.keysym.scancode; }
-int is_no_mods() { return !event.key.keysym.mod; }
-int is_lshift() { return KMOD_LSHIFT & event.key.keysym.mod; }
-int is_rshift() { return KMOD_RSHIFT & event.key.keysym.mod; }
-int is_lctrl() { return KMOD_LCTRL & event.key.keysym.mod; }
-int is_rctrl() { return KMOD_RCTRL & event.key.keysym.mod; }
-int is_lalt() { return KMOD_LALT & event.key.keysym.mod; }
-int is_ralt() { return KMOD_RALT & event.key.keysym.mod; }
-int is_num() { return KMOD_NUM & event.key.keysym.mod; }
-int is_caps() { return KMOD_CAPS & event.key.keysym.mod; }
 
 // Mouse event accessors
 int is_mouse_motion() { return event.type == SDL_MOUSEMOTION; }

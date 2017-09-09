@@ -105,4 +105,5 @@
    #:byte2
    #:*num-samples-written*
    #:sine-audio
-   #:test-pixel-texture))
+   #:test-pixel-texture
+   #:test-pixels-to-window))

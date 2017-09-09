@@ -87,6 +87,7 @@ false if all events in the queue have been exhausted.
 The last polled event is held in a variable checked by functions
 like KEY-DOWN?, MOUSE-MOTION? and QUIT?, etc.
 The event remains the same until POLL-EVENT is called again.")
+
 (cffi:defcfun ("is_key_down" key-down?) :boolean
   "True if key press event.")
 (cffi:defcfun ("is_key_up" key-up?) :boolean
