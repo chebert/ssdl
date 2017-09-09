@@ -295,7 +295,7 @@ Shows angle, pivot, flipping, animation, and stretching."
 	      ;; Destination rectangle is twice as big.
 	      ;; Stretched to be wider than tall.
 	      100 10 (* 48 3) (* 48 2)
-	      (flip-none))
+	      nil nil)
 
 	     ;;; Draw flipped megamen
 	     ;; Flipped horizontally
@@ -303,13 +303,13 @@ Shows angle, pivot, flipping, animation, and stretching."
 	      texture
 	      2 2 48 48
 	      10 100 48 48
-	      (flip-horizontal))
+	      t nil)
 	     ;; Flipped both ways
 	     (draw-texture
 	      texture
 	      2 2 48 48
 	      40 100 48 48
-	      (flip-horizontal-and-vertical))
+	      t t)
 
 	     ;; Draw animated
 	     (draw-texture
@@ -317,7 +317,7 @@ Shows angle, pivot, flipping, animation, and stretching."
 	      ;; Animate the x coordinate of the sprite
 	      (+ 2 (* (+ 3 (mod (floor (ticks) 100) 4)) 51)) 2 48 48
 	      100 100 48 48
-	      (flip-none))
+	      nil nil)
 
 	     ;; Display the new drawings
 	     (display)
@@ -346,7 +346,7 @@ Shows angle, pivot, flipping, animation, and stretching."
        texture
        2 2 48 48
        10 10 (* 2 48) (* 2 48)
-       (flip-none))
+       nil nil)
 
       ;; Make semi-transparent.
       (texture-color-mod texture 255 255 255 128)
@@ -354,7 +354,7 @@ Shows angle, pivot, flipping, animation, and stretching."
        texture
        2 2 48 48
        150 10 (* 2 48) (* 2 48)
-       (flip-none))
+       nil nil)
 
       (display)
       (delay 3000)
@@ -410,7 +410,7 @@ Shows angle, pivot, flipping, animation, and stretching."
        texture
        0 0 40 40
        10 10 80 80
-       (flip-none))
+       nil nil)
       (display)
 
       (delay 3000)
@@ -471,7 +471,7 @@ Quit after a few seconds."
       (draw-texture texture
 		    0 0 width height
 		    0 0 width height
-		    (flip-none))
+		    nil nil)
       (display)
       (delay 3000)
       (free-texture texture))))

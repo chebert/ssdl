@@ -90,21 +90,17 @@ SDL_Texture* load_bmp(const char* path) {
 	return tex;
 }
 
-// Flip flags to be used in draw_texture()
-SDL_RendererFlip flip_none() { return SDL_FLIP_NONE; }
-SDL_RendererFlip flip_horizontal() { return SDL_FLIP_HORIZONTAL; }
-SDL_RendererFlip flip_vertical() { return SDL_FLIP_VERTICAL; }
-SDL_RendererFlip flip_horizontal_and_vertical() { return SDL_FLIP_VERTICAL | SDL_FLIP_HORIZONTAL; }
-
 void draw_texture(SDL_Texture* tex,
 		int sx, int sy, int sw, int sh,
 		int dx, int dy, int dw, int dh,
-		SDL_RendererFlip flip) {
+		int flip_horizontal, int flip_vertical) {
 	// Draw the texture from the source rect to the dest rect.
 	SDL_Rect src, dst;
 	src.x = sx; src.y = sy; src.w = sw, src.h = sh;
 	dst.x = dx; dst.y = dy; dst.w = dw, dst.h = dh;
 
+	SDL_RendererFlip flip = flip_horizontal ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
+	flip = flip_vertical ? SDL_FLIP_VERTICAL | flip : flip;
 	SDL_RenderCopyEx(renderer, tex, &src, &dst, 0.0, NULL, flip);
 }
 
@@ -532,7 +528,7 @@ static int test_main() {
 	if (!tex) return -1;
 	draw_color(0, 0, 0, 255);
 	clear();
-	draw_texture(tex, 32, 32, 32, 32, 100, 100, 32, 32, flip_none());
+	draw_texture(tex, 32, 32, 32, 32, 100, 100, 32, 32, 0, 0);
 	draw_color(255, 0, 0, 255);
 	draw_rect(10, 10, 20, 30, 1);
 	display();
