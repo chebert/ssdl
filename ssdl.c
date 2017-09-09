@@ -101,7 +101,11 @@ void draw_texture(SDL_Texture* tex,
 
 	SDL_RendererFlip flip = flip_horizontal ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
 	flip = flip_vertical ? SDL_FLIP_VERTICAL | flip : flip;
-	SDL_RenderCopyEx(renderer, tex, &src, &dst, 0.0, NULL, flip);
+	if (flip != SDL_FLIP_NONE) {
+		SDL_RenderCopyEx(renderer, tex, &src, &dst, 0.0, NULL, flip);
+	} else {
+		SDL_RenderCopy(renderer, tex, &src, &dst);
+	}
 }
 
 void free_texture(SDL_Texture* tex) {
