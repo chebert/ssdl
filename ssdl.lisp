@@ -86,6 +86,13 @@ Flip the drawing according to the given flip-flags"
 (cffi:defcfun ("clear" clear) :void
   "Clear the screen to the draw-color.")
 
+(cffi:defcfun ("texture_width" texture-width) :int
+  "Return the width (in pixels) of the texture."
+  (texture :pointer))
+(cffi:defcfun ("texture_height" texture-height) :int
+  "Return the height (in pixels) of the texture."
+  (texture :pointer))
+
 ;;; Events
 (cffi:defcfun ("poll_event" poll-event) :boolean
   "Poll for the next event. True if there were more events,

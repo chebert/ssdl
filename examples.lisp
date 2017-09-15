@@ -267,15 +267,19 @@ Print joystick buttons being pressed/released and joystick axis movements."
 
 (defun test-texture ()
   "Draw some textures to the window.
+Prints the size of the megasheet.bmp texture.
 Shows angle, pivot, flipping, animation, and stretching."
   (with-init "Texture test" 320 240
-    (let (;; Keep track of if a quit event has occurred.
-	  (quit? nil)
-	  ;; Keep track of the last time we updated.
-	  (last-update-ticks (ticks))
-	  (texture (load-bmp
-		    (namestring
-		     (asdf:system-relative-pathname :ssdl "megasheet.bmp")))))
+    (let* (;; Keep track of if a quit event has occurred.
+	   (quit? nil)
+	   ;; Keep track of the last time we updated.
+	   (last-update-ticks (ticks))
+	   (texture (load-bmp
+		     (namestring
+		      (asdf:system-relative-pathname :ssdl "megasheet.bmp"))))
+	   (width (texture-width texture))
+	   (height (texture-height texture)))
+      (print (list 'width width 'height height))
       (loop until quit? do
 	 ;; Only update if 1/60th of a second (16 ms) has occured.
 	   (when (> (- (ticks) last-update-ticks) 16)

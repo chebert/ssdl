@@ -118,6 +118,17 @@ void draw_color(unsigned char r, unsigned char g, unsigned char b, unsigned char
 	SDL_SetRenderDrawColor(renderer, r, g, b, a);
 }
 
+int texture_width(SDL_Texture* tex) {
+	int width;
+	SDL_QueryTexture(tex, NULL, NULL, &width, NULL);
+	return width;
+}
+int texture_height(SDL_Texture* tex) {
+	int height;
+	SDL_QueryTexture(tex, NULL, NULL, NULL, &height);
+	return height;
+}
+
 static SDL_Event event;
 
 int poll_event() {

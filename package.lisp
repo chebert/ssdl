@@ -83,7 +83,9 @@
    #:texture-color-mod
    #:render-to-window
    #:flip-horizontal-and-vertical
-   #:render-pixels-to-window))
+   #:render-pixels-to-window
+   #:texture-height
+   #:texture-width))
 
 (defpackage #:ssdl-examples
   (:use #:cl #:ssdl)
