@@ -1,7 +1,7 @@
 Super-Simple DirectMedia Layer.
 ===============================
 
-Simplified wrapper around SDL meant for one-window projects
+Simplified wrapper around SDL for SBCL meant for one-window projects
 that just want a simple foreign function interface with the bare essentials.
 Basically for 2D games, where you want to do everything yourself, but just
 want a window, input, and textures.
