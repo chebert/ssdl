@@ -3,7 +3,7 @@
 ;;;; Copyright (c) 2017 Christopher Hebert <hebert.christopherj@gmail.com>
 
 (defpackage #:ssdl
-  (:use #:cl)
+  (:use #:cl #:sb-alien)
   (:export
    #:with-init
    #:init

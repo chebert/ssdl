@@ -15,7 +15,7 @@ Supports loading bitmaps with magenta masked out.
 See the README.txt for example programs."
   :author "Christopher Hebert <hebert.christopherj@gmail.com>"
   :license "All Rights Reserved"
-  :depends-on (#:cffi)
+  :depends-on ()
   :serial t
   :components ((:file "package")
                (:file "ssdl")
