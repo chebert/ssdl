@@ -11,6 +11,8 @@
    #+linux
    (asdf:system-relative-pathname :ssdl "libssdl.so")))
 
+(defun null? (pointer) (null-alien pointer))
+
 (define-alien-routine ("init" init) boolean
   "Initialize SDL and create a window with the given title and dimensions."
   (title c-string)

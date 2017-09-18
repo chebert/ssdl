@@ -16,9 +16,6 @@
    #:draw-color
 
    #:load-bmp
-   #:flip-none
-   #:flip-horizontal
-   #:flip-vertical
    #:draw-texture
    #:free-texture
 
@@ -68,12 +65,6 @@
    #:play-audio
    #:stop-audio
    #:sample-size-in-bytes
-   #:audio-u8
-   #:audio-s8
-   #:audio-u16
-   #:audio-s16
-   #:audio-s32
-   #:audio-f32
 
    #:ticks
    #:delay
@@ -85,7 +76,8 @@
    #:flip-horizontal-and-vertical
    #:render-pixels-to-window
    #:texture-height
-   #:texture-width))
+   #:texture-width
+   #:null?))
 
 (defpackage #:ssdl-examples
   (:use #:cl #:ssdl)
