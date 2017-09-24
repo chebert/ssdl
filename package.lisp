@@ -100,4 +100,5 @@
    #:*num-samples-written*
    #:sine-audio
    #:test-pixel-texture
-   #:test-pixels-to-window))
+   #:test-pixels-to-window
+   #:test-texture-target))
