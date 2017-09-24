@@ -11,7 +11,7 @@
    #+linux
    (asdf:system-relative-pathname :ssdl "libssdl.so")))
 
-(defun null? (pointer) (null-alien pointer))
+(defun null? (pointer) (sb-alien::sap= (sb-alien::int-sap 0) pointer))
 
 (define-alien-routine ("init" init) boolean
   "Initialize SDL and create a window with the given title and dimensions."
@@ -194,10 +194,12 @@ for 4 frames of video at 60Hz would be the closest power of 2 to
 e.g. WRITE-AUDIO, AUDIO-AVAILABLE, and CLEAR-AUDIO.
 Locks the audio device from modifying the audio buffer on the audio
 thread."
-  `(progn
-     (audio-lock)
-     ,@body
-     (audio-unlock)))
+  (let ((res (gensym)))
+    `(let ((,res ()))
+       (audio-lock)
+       (setq ,res (progn ,@body))
+       (audio-unlock)
+       ,res)))
 
 (define-alien-routine ("audio_available" audio-available) integer
   "MUST BE CALLED in WITH-AUDIO-LOCK if sound is playing.
