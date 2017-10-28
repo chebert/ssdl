@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
@@ -21,6 +22,7 @@ void quit() {
    renderer = NULL;
    window_pixels = NULL;
    IMG_Quit();
+   TTF_Quit();
    // Quit SDL and close the audio.
    SDL_Quit();
 }
@@ -57,6 +59,7 @@ int init(const char *title, int width, int height) {
    }
 
    IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF);
+   TTF_Init();
    SDL_ShowCursor(SDL_DISABLE);
    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
    return success;
@@ -144,6 +147,33 @@ int texture_height(SDL_Texture* tex) {
    int height;
    SDL_QueryTexture(tex, NULL, NULL, NULL, &height);
    return height;
+}
+
+TTF_Font* open_font(const char* file, int ptsize) {
+   return TTF_OpenFont(file, ptsize);
+}
+void close_font(TTF_Font* font) {
+   TTF_CloseFont(font);
+}
+
+SDL_Texture* text_texture(TTF_Font* font,
+			  const char* text,
+			  unsigned char fg_r,
+			  unsigned char fg_g,
+			  unsigned char fg_b,
+			  unsigned char fg_a,
+			  unsigned char bg_r,
+			  unsigned char bg_g,
+			  unsigned char bg_b,
+			  unsigned char bg_a) {
+   // Shaded drawing of text using fg color onto box of bg color.
+   // Text is utf8.
+   const SDL_Color fg = {fg_r, fg_g, fg_b, fg_a}, bg = {bg_r, bg_g, bg_b, bg_a};
+   SDL_Surface* surf = TTF_RenderUTF8_Shaded(font, text, fg, bg);
+   if (!surf) return NULL;
+   SDL_Texture* tex = SDL_CreateTextureFromSurface(renderer, surf);
+   SDL_FreeSurface(surf);
+   return tex;
 }
 
 static SDL_Event event;

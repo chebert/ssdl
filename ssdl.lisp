@@ -100,6 +100,29 @@ Flip the drawing according to the given flip-flags"
   "Return the height (in pixels) of the texture."
   (texture system-area-pointer))
 
+;;; TTF Fonts/Text
+(define-alien-routine ("open_font" open-font) system-area-pointer
+  "Open a TTF given the path and point size.
+Return a pointer to the font object."
+  (path c-string)
+  (point-size integer))
+(define-alien-routine ("close_font" close-font) void
+  "Close the opened TTF."
+  (font system-area-pointer))
+(define-alien-routine ("text_texture" text-texture) system-area-pointer
+  "Creates a new texture and draws the UTF8 text,
+shaded using the foreground color, onto a box of the given background color."
+  (font system-area-pointer)
+  (text c-string)
+  (fg-r unsigned-char)
+  (fg-g unsigned-char)
+  (fg-b unsigned-char)
+  (fg-a unsigned-char)
+  (bg-r unsigned-char)
+  (bg-g unsigned-char)
+  (bg-b unsigned-char)
+  (bg-a unsigned-char))
+
 ;;; Events
 (define-alien-routine ("poll_event" poll-event) boolean
   "Poll for the next event. True if there were more events,

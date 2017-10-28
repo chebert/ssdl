@@ -79,6 +79,10 @@
    #:render-pixels-to-window
    #:texture-height
    #:texture-width
+   #:open-font
+   #:close-font
+   #:text-texture
+   
    #:null?))
 
 (defpackage #:ssdl-examples
