@@ -16,6 +16,7 @@
    #:draw-color
 
    #:load-bmp
+   #:load-image
    #:draw-texture
    #:free-texture
 

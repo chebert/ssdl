@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
@@ -19,6 +20,7 @@ void quit() {
 	window = NULL;
 	renderer = NULL;
 	window_pixels = NULL;
+	IMG_Quit();
 	// Quit SDL and close the audio.
 	SDL_Quit();
 }
@@ -54,6 +56,7 @@ int init(const char *title, int width, int height) {
 		success = 0;
 	}
 
+	IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF);
 	SDL_ShowCursor(SDL_DISABLE);
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 	return success;
@@ -87,7 +90,17 @@ SDL_Texture* load_bmp(const char* path) {
 	if (!surf) return NULL;
 	SDL_SetColorKey(surf, 1, SDL_MapRGB(surf->format, 255, 0, 255));
 	SDL_Texture* tex = SDL_CreateTextureFromSurface(renderer, surf);
+	SDL_FreeSurface(surf);
 	return tex;
+}
+
+SDL_Texture* load_image(const char* path) {
+   // Load image from the path.
+   SDL_Surface* surf = IMG_Load(path);
+   if (!surf) return NULL;
+   SDL_Texture* tex = SDL_CreateTextureFromSurface(renderer, surf);
+   SDL_FreeSurface(surf);
+   return tex;
 }
 
 void draw_texture(SDL_Texture* tex,

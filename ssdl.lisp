@@ -59,6 +59,9 @@ Draw an outline if FILLED? is false, otherwise draw solid."
   "Load a 24-bit RGB Bitmap with a color mask of magenta (255,0,255).
 This means that all magenta pixels will not be drawn."
   (path c-string))
+(define-alien-routine ("load_image" load-image) system-area-pointer
+  "Load a PNG, JPG, or BMP into a texture."
+  (path c-string))
 
 (define-alien-routine ("texture_color_mod" texture-color-mod) void
   "Modulate the colors of the texture. Modulate the transparency of the
