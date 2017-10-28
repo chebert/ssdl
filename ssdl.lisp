@@ -30,6 +30,8 @@ Calls QUIT to cleanup."
 	       ,@body)
      (quit)))
 
+(define-alien-routine ("error_string" error-string) c-string
+  "Return the error string based on the last set error code.")
 
 ;;; Drawing
 (define-alien-routine ("draw_color" draw-color) void

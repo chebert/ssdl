@@ -62,6 +62,10 @@ int init(const char *title, int width, int height) {
    return success;
 }
 
+const char* error_string() {
+   return SDL_GetError();
+}
+
 void display() {
    // Flip the back buffer.
    SDL_RenderPresent(renderer);

@@ -5,9 +5,10 @@
 (defpackage #:ssdl
   (:use #:cl #:sb-alien)
   (:export
-   #:with-init
    #:init
    #:quit
+   #:with-init
+   #:error-string
 
    #:display
 
