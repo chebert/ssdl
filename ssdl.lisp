@@ -182,6 +182,16 @@ The event remains the same until POLL-EVENT is called again.")
 (define-alien-routine ("is_quit" quit?) boolean
   "True if quit event.")
 
+;;; Text Input Accessors
+(define-alien-routine ("is_text_input" text-input?) boolean
+  "True if text input event.")
+(define-alien-routine ("text_input" text-input) c-string
+  "Returns the text input of a text input event.")
+(define-alien-routine ("enable_text_input" enable-text-input) void
+  "Enables text input events.")
+(define-alien-routine ("disable_text_input" disable-text-input) void
+  "Disables text input events.")
+
 ;;; Joysticks
 (define-alien-routine ("open_joystick" open-joystick) system-area-pointer
   "Open a joystick. JOY-ID is the same one used in a

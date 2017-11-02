@@ -233,6 +233,12 @@ int joy_axis_value() { return event.jaxis.value; }
 
 int is_quit() { return event.type == SDL_QUIT; }
 
+// Text Editing
+int is_text_input() { return event.type == SDL_TEXTINPUT; }
+char* text_input() { return event.text.text; }
+void enable_text_input() { SDL_StartTextInput(); }
+void disable_text_input() { SDL_StopTextInput(); }
+
 // Structure that holds audio parameters.
 static struct {
    SDL_AudioFormat format;
