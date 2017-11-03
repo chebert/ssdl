@@ -83,7 +83,11 @@
    #:close-font
    #:text-texture
    
-   #:null?))
+   #:null?
+   #:text-input?
+   #:text-input
+   #:enable-text-input
+   #:disable-text-input))
 
 (defpackage #:ssdl-examples
   (:use #:cl #:ssdl)
