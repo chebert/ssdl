@@ -212,6 +212,10 @@ int mouse_y() {
    }
 }
 
+void window_size(int w, int h) {
+   SDL_SetWindowSize(window, w, h);
+}
+
 // Joystick event accessors
 int is_joy_added() { return event.type == SDL_JOYDEVICEADDED; }
 int is_joy_removed() { return event.type == SDL_JOYDEVICEREMOVED; }

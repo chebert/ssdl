@@ -6,10 +6,11 @@
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (load-shared-object
-   #+win32
-   (asdf:system-relative-pathname :ssdl "ssdl.dll")
-   #+linux
-   (asdf:system-relative-pathname :ssdl "libssdl.so")))
+   (merge-pathnames #+win32 "ssdl.dll"
+		    #+linux "libssdl.so"
+
+		    #+load-system *default-pathname-defaults*
+		    #-load-system (asdf:system-source-directory :ssdl))))
 
 (defun null? (pointer) (sb-alien::sap= (sb-alien::int-sap 0) pointer))
 
@@ -21,6 +22,11 @@
 
 (define-alien-routine ("quit" quit) void
   "Quit SDL. Close the audio-stream.")
+
+(define-alien-routine ("window_size" window-size) void
+  "Resize the window."
+  (width int)
+  (height int))
 
 (defmacro with-init (title width height &body body)
   "Calls init and performs BODY in a protected form.
