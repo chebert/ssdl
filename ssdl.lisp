@@ -5,12 +5,13 @@
 (in-package #:ssdl)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (load-shared-object
-   (merge-pathnames #+win32 "ssdl.dll"
-		    #+linux "libssdl.so"
-
-		    #+load-system *default-pathname-defaults*
-		    #-load-system (asdf:system-source-directory :ssdl))))
+  (let ((pathname (merge-pathnames #+win32 "ssdl.dll"
+				   #+linux "libssdl.so"	
+				   #+load-system *default-pathname-defaults*
+				   #-load-system (asdf:system-source-directory :ssdl))))
+    (unless (probe-file pathname)
+      (error "Could not find path ~A" pathname))
+    (load-shared-object pathname)))
 
 (defun null? (pointer) (sb-alien::sap= (sb-alien::int-sap 0) pointer))
 

@@ -1,0 +1,1 @@
+gcc -DADD_EXPORTS -fPIC -shared -o ssdl.dll ssdl.c -L. -lSDL2 -lSDL2_image -lSDL2_ttf

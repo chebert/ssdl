@@ -1,6 +1,6 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
+#include "SDL2/SDL.h"
+#include "SDL2/SDL_image.h"
+#include "SDL2/SDL_ttf.h"
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
@@ -9,12 +9,18 @@
 
 #define STDERR stdout
 
+#ifdef ADD_EXPORTS
+	#define API __declspec(dllexport)
+#else
+	#define API
+#endif
+
 static SDL_Window* window;
 static SDL_Renderer* renderer;
 static SDL_Texture* window_pixels;
 static int window_width, window_height;
 
-void quit() {
+API void quit() {
    if (window) SDL_DestroyWindow(window);
    if (renderer) SDL_DestroyRenderer(renderer);
    if (window_pixels) SDL_DestroyTexture(window_pixels);
@@ -27,7 +33,7 @@ void quit() {
    SDL_Quit();
 }
 
-int init(const char *title, int width, int height) {
+API int init(const char *title, int width, int height) {
    // Return true if successful, otherwise false and prints error to STDERR.
    int success = 1;
    if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -65,21 +71,21 @@ int init(const char *title, int width, int height) {
    return success;
 }
 
-const char* error_string() {
+API const char* error_string() {
    return SDL_GetError();
 }
 
-void display() {
+API void display() {
    // Flip the back buffer.
    SDL_RenderPresent(renderer);
 }
 
-void clear() {
+API void clear() {
    // Clear the screen to the render draw color
    SDL_RenderClear(renderer);
 }
 
-void draw_rect(int x, int y, int w, int h, int filled) {
+API void draw_rect(int x, int y, int w, int h, int filled) {
    // Draw a rect using the render draw color.
    // Filled if filled is true, outlined if filled is false.
    SDL_Rect rect;
@@ -91,7 +97,7 @@ void draw_rect(int x, int y, int w, int h, int filled) {
    }
 }
 
-SDL_Texture* load_bmp(const char* path) {
+API SDL_Texture* load_bmp(const char* path) {
    // Load a BMP from path using magenta as the color key.
    SDL_Surface* surf = SDL_LoadBMP(path);
    if (!surf) return NULL;
@@ -101,7 +107,7 @@ SDL_Texture* load_bmp(const char* path) {
    return tex;
 }
 
-SDL_Texture* load_image(const char* path) {
+API SDL_Texture* load_image(const char* path) {
    // Load image from the path.
    SDL_Surface* surf = IMG_Load(path);
    if (!surf) return NULL;
@@ -110,7 +116,7 @@ SDL_Texture* load_image(const char* path) {
    return tex;
 }
 
-void draw_texture(SDL_Texture* tex,
+API void draw_texture(SDL_Texture* tex,
 		  int sx, int sy, int sw, int sh,
 		  int dx, int dy, int dw, int dh,
 		  int flip_horizontal, int flip_vertical) {
@@ -128,35 +134,35 @@ void draw_texture(SDL_Texture* tex,
    }
 }
 
-void free_texture(SDL_Texture* tex) {
+API void free_texture(SDL_Texture* tex) {
    // Free the memory held by tex
    SDL_DestroyTexture(tex);
 }
 
-void draw_color(unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
+API void draw_color(unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
    // Set the render draw color
    SDL_SetRenderDrawColor(renderer, r, g, b, a);
 }
 
-int texture_width(SDL_Texture* tex) {
+API int texture_width(SDL_Texture* tex) {
    int width;
    SDL_QueryTexture(tex, NULL, NULL, &width, NULL);
    return width;
 }
-int texture_height(SDL_Texture* tex) {
+API int texture_height(SDL_Texture* tex) {
    int height;
    SDL_QueryTexture(tex, NULL, NULL, NULL, &height);
    return height;
 }
 
-TTF_Font* open_font(const char* file, int ptsize) {
+API TTF_Font* open_font(const char* file, int ptsize) {
    return TTF_OpenFont(file, ptsize);
 }
-void close_font(TTF_Font* font) {
+API void close_font(TTF_Font* font) {
    TTF_CloseFont(font);
 }
 
-SDL_Texture* text_texture(TTF_Font* font,
+API SDL_Texture* text_texture(TTF_Font* font,
 			  const char* text,
 			  unsigned char fg_r,
 			  unsigned char fg_g,
@@ -178,33 +184,33 @@ SDL_Texture* text_texture(TTF_Font* font,
 
 static SDL_Event event;
 
-int poll_event() {
+API int poll_event() {
    // Poll the next event. True if there are pending events.
    return SDL_PollEvent(&event);
 }
 
 // Keyboard event accessors
-int is_key_down() { return event.type == SDL_KEYDOWN; }
-int is_key_up() { return event.type == SDL_KEYUP; }
+API int is_key_down() { return event.type == SDL_KEYDOWN; }
+API int is_key_up() { return event.type == SDL_KEYUP; }
 
-int is_repeat() { return event.key.repeat; }
-SDL_Scancode scancode() { return event.key.keysym.scancode; }
+API int is_repeat() { return event.key.repeat; }
+API SDL_Scancode scancode() { return event.key.keysym.scancode; }
 
 // Mouse event accessors
-int is_mouse_motion() { return event.type == SDL_MOUSEMOTION; }
-int is_mouse_button_down() { return event.type == SDL_MOUSEBUTTONDOWN; }
-int is_mouse_button_up() { return event.type == SDL_MOUSEBUTTONUP; }
-int is_lmb() { return event.button.button == SDL_BUTTON_LEFT; }
-int is_mmb() { return event.button.button == SDL_BUTTON_MIDDLE; }
-int is_rmb() { return event.button.button == SDL_BUTTON_RIGHT; }
-int mouse_x() {
+API int is_mouse_motion() { return event.type == SDL_MOUSEMOTION; }
+API int is_mouse_button_down() { return event.type == SDL_MOUSEBUTTONDOWN; }
+API int is_mouse_button_up() { return event.type == SDL_MOUSEBUTTONUP; }
+API int is_lmb() { return event.button.button == SDL_BUTTON_LEFT; }
+API int is_mmb() { return event.button.button == SDL_BUTTON_MIDDLE; }
+API int is_rmb() { return event.button.button == SDL_BUTTON_RIGHT; }
+API int mouse_x() {
    if (event.type == SDL_MOUSEMOTION) {
       return event.motion.x;
    } else {
       return event.button.x;
    }
 }
-int mouse_y() {
+API int mouse_y() {
    if (event.type == SDL_MOUSEMOTION) {
       return event.motion.y;
    } else {
@@ -212,14 +218,14 @@ int mouse_y() {
    }
 }
 
-void window_size(int w, int h) {
+API void window_size(int w, int h) {
    SDL_SetWindowSize(window, w, h);
 }
 
 // Joystick event accessors
-int is_joy_added() { return event.type == SDL_JOYDEVICEADDED; }
-int is_joy_removed() { return event.type == SDL_JOYDEVICEREMOVED; }
-int joy_id() {
+API int is_joy_added() { return event.type == SDL_JOYDEVICEADDED; }
+API int is_joy_removed() { return event.type == SDL_JOYDEVICEREMOVED; }
+API int joy_id() {
    switch (event.type) {
    case SDL_JOYAXISMOTION: return event.jaxis.which;
    case SDL_JOYBUTTONDOWN:
@@ -228,20 +234,20 @@ int joy_id() {
    case SDL_JOYDEVICEREMOVED: return event.jdevice.which;
    }
 }
-int is_joy_down() { return event.type == SDL_JOYBUTTONDOWN; }
-int is_joy_up() { return event.type == SDL_JOYBUTTONUP; }
-int joy_button() { return event.jbutton.button; }
-int is_joy_axis() { return event.type == SDL_JOYAXISMOTION; }
-int joy_axis() { return event.jaxis.axis; }
-int joy_axis_value() { return event.jaxis.value; }
+API int is_joy_down() { return event.type == SDL_JOYBUTTONDOWN; }
+API int is_joy_up() { return event.type == SDL_JOYBUTTONUP; }
+API int joy_button() { return event.jbutton.button; }
+API int is_joy_axis() { return event.type == SDL_JOYAXISMOTION; }
+API int joy_axis() { return event.jaxis.axis; }
+API int joy_axis_value() { return event.jaxis.value; }
 
-int is_quit() { return event.type == SDL_QUIT; }
+API int is_quit() { return event.type == SDL_QUIT; }
 
 // Text Editing
-int is_text_input() { return event.type == SDL_TEXTINPUT; }
-char* text_input() { return event.text.text; }
-void enable_text_input() { SDL_StartTextInput(); }
-void disable_text_input() { SDL_StopTextInput(); }
+API int is_text_input() { return event.type == SDL_TEXTINPUT; }
+API char* text_input() { return event.text.text; }
+API void enable_text_input() { SDL_StartTextInput(); }
+API void disable_text_input() { SDL_StopTextInput(); }
 
 // Structure that holds audio parameters.
 static struct {
@@ -253,13 +259,13 @@ static struct {
    int start, end, size, capacity;
 } audio = { 0 };
 
-int audio_available() {
+API int audio_available() {
    // Number of bytes that can be written to the ring buffer
    // Call inside of a SDL_LockAudio block
    return audio.capacity - audio.size;
 }
 
-void write_audio(unsigned char* src, int n) {
+API void write_audio(unsigned char* src, int n) {
    // Write n bytes of audio from src into the ring buffer.
    // Call inside of a SDL_LockAudio block
 
@@ -325,7 +331,7 @@ static void read_audio(unsigned char* dest, int n) {
    audio.size -= n;
 }
 
-void clear_audio() {
+API void clear_audio() {
    // Clear any queued audio from the ring buffer.
    // Call inside of a SDL_LockAudio block
    audio.start = 0;
@@ -378,18 +384,18 @@ static void write_sine() {
    SDL_UnlockAudio();
 }
 
-void stop_audio() {
+API void stop_audio() {
    // Pause/stop playback of audio.
    SDL_PauseAudio(1);
 }
-void play_audio() {
+API void play_audio() {
    // Resume/Start playback of audio.
    SDL_PauseAudio(0);
 }
 
 static int format_byte_size(SDL_AudioFormat fmt) { return (0xFF & fmt) >> 3; }
 
-int open_audio(int freq, int num_channels, int num_samples) {
+API int open_audio(int freq, int num_channels, int num_samples) {
    // Open an audio device with the provided parameters,
    // and create the audio buffer of size buffer_bytes.
    // Return true if successful.
@@ -415,7 +421,7 @@ int open_audio(int freq, int num_channels, int num_samples) {
    init_audio(buffer_bytes);
    return success;
 }
-void close_audio () {
+API void close_audio () {
    // Close the audio device and free the audio buffer.
    SDL_CloseAudio();
    free(audio.buffer);
@@ -479,51 +485,51 @@ static int test_ring_buffer() {
    print_audio();
 }
 
-int ticks() {
+API int ticks() {
    // Milliseconds elapsed since init() was called
    return SDL_GetTicks();
 }
 
-void delay(int milliseconds) {
+API void delay(int milliseconds) {
    // Pause execution for at least milliseconds time.
    // Yield execution.
    // Call delay(1) to yield execution in busy loops.
    SDL_Delay(milliseconds);
 }
-const char* scancode_name(SDL_Scancode sc) {
+API const char* scancode_name(SDL_Scancode sc) {
    // Return the string name of the scancode.
    // String can be used in scancode_from_name()
    return SDL_GetScancodeName(sc);
 }
-SDL_Scancode scancode_from_name(const char* str) {
+API SDL_Scancode scancode_from_name(const char* str) {
    // Return the scancode given the string name.
    return SDL_GetScancodeFromName(str);
 }
 
-SDL_Joystick* open_joystick(int device_index) {
+API SDL_Joystick* open_joystick(int device_index) {
    // Open the Nth plugged-in joystick.
    // device_index is the joy_id() of an joystick add event.
    // Start reading for button/axis events.
    return SDL_JoystickOpen(device_index);
 }
-int joystick_id(SDL_Joystick* js) {
+API int joystick_id(SDL_Joystick* js) {
    // Return the id of the joystick.
    // Used in button/axis/removed events.
    return SDL_JoystickInstanceID(js);
 }
-void close_joystick(SDL_Joystick *js) {
+API void close_joystick(SDL_Joystick *js) {
    // Close a joystick opened with open_joystick
    SDL_JoystickClose(js);
 }
 
-void texture_color_mod(SDL_Texture* tex, Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
+API void texture_color_mod(SDL_Texture* tex, Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
    // Modulate the color and alpha of the texture when drawing to the screen.
    // Clear modulation with 255,255,255,255
    SDL_SetTextureColorMod(tex, r, g, b);
    SDL_SetTextureAlphaMod(tex, a);
 }
 
-SDL_Texture* make_texture_from_pixels(int width, int height, const void* pixels) {
+API SDL_Texture* make_texture_from_pixels(int width, int height, const void* pixels) {
    // Create a new texture from an array of pixels.
    // Pixels are in 32-bit RGBA format.
    SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ABGR8888,
@@ -541,7 +547,7 @@ SDL_Texture* make_texture_from_pixels(int width, int height, const void* pixels)
    return texture;
 }
 
-SDL_Texture* make_texture(int width, int height) {
+API SDL_Texture* make_texture(int width, int height) {
    // Create a 32-bit RGBA texture that can be rendered to
    // using render_to_texture.
    SDL_Texture* tex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ABGR8888,
@@ -552,16 +558,16 @@ SDL_Texture* make_texture(int width, int height) {
    return tex;
 }
 
-void render_to_texture(SDL_Texture* texture) {
+API void render_to_texture(SDL_Texture* texture) {
    // Render to a texture created with make_texture()
    SDL_SetRenderTarget(renderer, texture);
 }
-void render_to_window() {
+API void render_to_window() {
    // Render to the screen. Use after render_to_texture()
    SDL_SetRenderTarget(renderer, NULL);
 }
 
-void render_pixels_to_window(Uint8 *pixels) {
+API void render_pixels_to_window(Uint8 *pixels) {
    void* dest;
    int pitch;
    SDL_LockTexture(window_pixels, NULL, &dest, &pitch);
