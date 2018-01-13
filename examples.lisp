@@ -480,6 +480,42 @@ Quit after a few seconds."
       (delay 3000)
       (free-texture texture))))
 
+(defun test-pixels-to-texture ()
+  "Set the pixels of a texture directly, then copies it to the screen.
+Draws an elongated checkerboard pattern of red and green which fills the screen."
+  (let ((width 200)
+	(height 200))
+    (with-init "Software Rendering" width height
+      (let* ((bytes-per-pixel 4)
+	     (pixel-bytes (byte-array (* width height bytes-per-pixel)))
+	     (texture (make-texture width height))
+	     ;; Index of the next byte to set.
+	     (n 0))
+	(loop for row below height do
+	     (loop for col below width do
+		;; Make a checkerboard pattern
+		  (cond
+		    ((eq (zerop (mod (floor col 25) 2))
+			 ;; Rectangular checkers
+			 (zerop (mod (floor row 40) 2)))
+		     ;; RGBA
+		     (setf (aref pixel-bytes n) 255) (incf n)
+		     (setf (aref pixel-bytes n) 0) (incf n)
+		     (setf (aref pixel-bytes n) 0) (incf n)
+		     (setf (aref pixel-bytes n) 255) (incf n))
+		    (t
+		     ;; RGBA
+		     (setf (aref pixel-bytes n) 0) (incf n)
+		     (setf (aref pixel-bytes n) 255) (incf n)
+		     (setf (aref pixel-bytes n) 0) (incf n)
+		     (setf (aref pixel-bytes n) 255) (incf n)))))
+
+	;; Copy the pixels to the window.
+	(update-texture-pixels texture pixel-bytes)
+	(draw-texture texture 0 0 width height 0 0 width height nil nil)
+	(display)
+	(delay 2000)))))
+
 (defun test-pixels-to-window ()
   "Set the pixels of the window directly. Draws an elongated checkerboard
 pattern of red and green which fills the screen."
