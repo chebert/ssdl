@@ -129,6 +129,15 @@ shaded using the foreground color, onto a box of the given background color."
   (bg-g unsigned-char)
   (bg-b unsigned-char)
   (bg-a unsigned-char))
+(define-alien-routine ("simple_text_texture" simple-text-texture) system-area-pointer
+  "Creates a new texture and draws the UTF8 text,
+shaded using the foreground color, onto a transparent background."
+  (font system-area-pointer)
+  (text c-string)
+  (fg-r unsigned-char)
+  (fg-g unsigned-char)
+  (fg-b unsigned-char)
+  (fg-a unsigned-char))
 
 ;;; Events
 (define-alien-routine ("poll_event" poll-event) boolean

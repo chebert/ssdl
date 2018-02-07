@@ -182,6 +182,22 @@ API SDL_Texture* text_texture(TTF_Font* font,
    return tex;
 }
 
+API SDL_Texture* simple_text_texture(TTF_Font* font,
+				     const char* text,
+				     unsigned char fg_r,
+				     unsigned char fg_g,
+				     unsigned char fg_b,
+				     unsigned char fg_a) {
+   // Shaded drawing of text using fg color onto box of bg color.
+   // Text is utf8.
+   const SDL_Color fg = {fg_r, fg_g, fg_b, fg_a};
+   SDL_Surface* surf = TTF_RenderUTF8_Solid(font, text, fg);
+   if (!surf) return NULL;
+   SDL_Texture* tex = SDL_CreateTextureFromSurface(renderer, surf);
+   SDL_FreeSurface(surf);
+   return tex;
+}
+
 static SDL_Event event;
 
 API int poll_event() {
