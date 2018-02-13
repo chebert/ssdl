@@ -188,7 +188,7 @@ API SDL_Texture* simple_text_texture(TTF_Font* font,
 				     unsigned char fg_g,
 				     unsigned char fg_b,
 				     unsigned char fg_a) {
-   // Shaded drawing of text using fg color onto box of bg color.
+   // Solid drawing of text using fg color onto transparent background.
    // Text is utf8.
    const SDL_Color fg = {fg_r, fg_g, fg_b, fg_a};
    SDL_Surface* surf = TTF_RenderUTF8_Solid(font, text, fg);

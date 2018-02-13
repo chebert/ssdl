@@ -82,6 +82,7 @@
    #:open-font
    #:close-font
    #:text-texture
+   #:simple-text-texture
    
    #:null?
    #:text-input?
